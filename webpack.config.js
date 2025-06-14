@@ -15,6 +15,15 @@ module.exports = (env, argv) => ({
   module: {
     rules: [
       { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ },
+      {
+        test: /\.m?js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [['@babel/preset-env', { targets: { esmodules: false } }]],
+          },
+        },
+      },
       { test: /\.css$/, use: ['style-loader', 'css-loader'] },
       { test: /\.(png|jpg|gif|svg|webp)$/, type: 'asset/inline' },
     ],
