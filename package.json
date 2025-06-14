@@ -88,6 +88,7 @@
     "cheerio": "^1.1.0",
     "fast-xml-parser": "^5.2.5",
     "fs-extra": "^11.3.0",
+    "js-base64": "^3.7.7",
     "svgson": "^5.3.1",
     "jszip": "^3.10.1"
   }

@@ -1,4 +1,5 @@
 import JSZip from 'jszip';
+import { Base64 } from 'js-base64';
 import { generateSFSymbol } from './shared/convertSFSymbol';
 import templateUrl from './shared/template.svg';
 
@@ -6,12 +7,8 @@ const ICON_WIDTH = 32;
 const ICON_HEIGHT = 32;
 
 const templateData = templateUrl.split(',')[1];
-const binary = atob(templateData);
-const bytes = new Uint8Array(binary.length);
-for (let i = 0; i < binary.length; i++) {
-  bytes[i] = binary.charCodeAt(i);
-}
-const template = new TextDecoder('utf-8').decode(bytes);
+const templateBytes = Base64.toUint8Array(templateData);
+const template = new TextDecoder('utf-8').decode(templateBytes);
 
 figma.showUI(__html__, { width: 490, height: 840 });
 
