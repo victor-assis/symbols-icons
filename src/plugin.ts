@@ -6,9 +6,13 @@ import templateUrl from './shared/template.svg';
 const ICON_WIDTH = 32;
 const ICON_HEIGHT = 32;
 
+function bytesToString(bytes: Uint8Array): string {
+  return Base64.decode(Base64.fromUint8Array(bytes));
+}
+
 const templateData = templateUrl.split(',')[1];
 const templateBytes = Base64.toUint8Array(templateData);
-const template = new TextDecoder('utf-8').decode(templateBytes);
+const template = bytesToString(templateBytes);
 
 figma.showUI(__html__, { width: 490, height: 840 });
 
@@ -34,7 +38,7 @@ async function exportAllIcons(): Promise<IconData[]> {
   const icons = await Promise.all(
     nodes.map(async (node) => {
       const bytes = await node.exportAsync({ format: 'SVG' });
-      const svg = new TextDecoder('utf-8').decode(bytes);
+      const svg = bytesToString(bytes);
       return { name: node.name, svg };
     }),
   );
