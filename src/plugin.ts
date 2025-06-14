@@ -5,7 +5,13 @@ import templateUrl from './shared/template.svg';
 const ICON_WIDTH = 32;
 const ICON_HEIGHT = 32;
 
-const template = Buffer.from(templateUrl.split(',')[1], 'base64').toString('utf8');
+const templateData = templateUrl.split(',')[1];
+const binary = atob(templateData);
+const bytes = new Uint8Array(binary.length);
+for (let i = 0; i < binary.length; i++) {
+  bytes[i] = binary.charCodeAt(i);
+}
+const template = new TextDecoder('utf-8').decode(bytes);
 
 figma.showUI(__html__, { width: 490, height: 840 });
 
