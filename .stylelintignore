@@ -1,0 +1,4 @@
+*.svg
+src/**/*.ts
+src/**/*.js
+*.html

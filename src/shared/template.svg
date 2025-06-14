@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+<line id="left-margin" x1="10" x2="10" y1="0" y2="600" stroke="none" />
+<line id="right-margin" x1="590" x2="590" y1="0" y2="600" stroke="none" />
+<line id="Baseline-S" x1="0" x2="600" y1="100" y2="100" stroke="none" />
+<line id="Capline-S" x1="0" x2="600" y1="20" y2="20" stroke="none" />
+<line id="Baseline-M" x1="0" x2="600" y1="300" y2="300" stroke="none" />
+<line id="Capline-M" x1="0" x2="600" y1="220" y2="220" stroke="none" />
+<line id="Baseline-L" x1="0" x2="600" y1="500" y2="500" stroke="none" />
+<line id="Capline-L" x1="0" x2="600" y1="420" y2="420" stroke="none" />
+<g id="Ultralight-S"></g>
+<g id="Thin-S"></g>
+<g id="Light-S"></g>
+<g id="Regular-S"></g>
+<g id="Medium-S"></g>
+<g id="Semibold-S"></g>
+<g id="Bold-S"></g>
+<g id="Heavy-S"></g>
+<g id="Black-S"></g>
+<g id="Ultralight-M"></g>
+<g id="Thin-M"></g>
+<g id="Light-M"></g>
+<g id="Regular-M"></g>
+<g id="Medium-M"></g>
+<g id="Semibold-M"></g>
+<g id="Bold-M"></g>
+<g id="Heavy-M"></g>
+<g id="Black-M"></g>
+<g id="Ultralight-L"></g>
+<g id="Thin-L"></g>
+<g id="Light-L"></g>
+<g id="Regular-L"></g>
+<g id="Medium-L"></g>
+<g id="Semibold-L"></g>
+<g id="Bold-L"></g>
+<g id="Heavy-L"></g>
+<g id="Black-L"></g>
+</svg>
