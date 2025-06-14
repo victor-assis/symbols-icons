@@ -1,0 +1,90 @@
+{
+  "private": true,
+  "name": "symbols-icons",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "webpack --watch",
+    "prebuild": "npm run lint:fix && rimraf dist/*",
+    "build": "webpack --mode=production",
+    "lint": "npm run lint:ts && npm run lint:css",
+    "lint:fix": "npm run lint:ts:fix && npm run lint:css:fix",
+    "lint:ts": "eslint . --ext .ts,.js",
+    "lint:ts:fix": "eslint . --ext .ts,.js --fix",
+    "lint:css": "stylelint 'src/**/*'",
+    "lint:css:fix": "stylelint 'src/**/*' --fix",
+    "test:base": "jest --passWithNoTests",
+    "test:precheck": "test -d dist || npm run build",
+    "pretest": "npm run test:precheck",
+    "test": "npm run test:base",
+    "pretest:watch": "npm run test:precheck",
+    "test:watch": "npm run test:base -- --watch"
+  },
+  "author": {
+    "name": "Victor Assis",
+    "email": "victorpassis@gmail.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/figma": "^1.0.8",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "css-loader": "^7.1.2",
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "html-inline-script-webpack-plugin": "^3.2.1",
+    "html-webpack-plugin": "^5.6.3",
+    "husky": "^9.1.7",
+    "jest": "^30.0.0",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
+    "style-loader": "^4.0.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-recommended": "^16.0.0",
+    "stylelint-prettier": "^5.0.3",
+    "ts-jest": "^29.3.4",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
+  },
+  "keywords": [
+    "figma",
+    "plugin",
+    "figma plugin",
+    "eslint",
+    "stylelint",
+    "prettier"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "src/**/*": [
+      "stylelint --fix",
+      "git add"
+    ],
+    "*.{html,json,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "cheerio": "^1.1.0",
+    "fast-xml-parser": "^5.2.5",
+    "fs-extra": "^11.3.0",
+    "svgson": "^5.3.1"
+  }
+}

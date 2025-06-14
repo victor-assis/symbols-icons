@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Icon Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-50">
+  <div class="container mx-auto px-4 py-6">
+    <header class="text-center mb-8">
+      <h1 class="text-base font-semibold text-gray-800">Icon Generator</h1>
+
+      <nav id="nav-tab" class="tabs flex border-b border-gray-200 justify-around mt-4 gap-4">
+        <button
+          class="flex-1 text-center py-3 px-1 text-gray-500 hover:text-teal-600 font-medium border-b-2 border-transparent hover:border-teal-600"
+          data-tab="icon">Icon</button>
+        <button
+          class="flex-1 text-center py-3 px-1 text-gray-500 hover:text-teal-600 font-medium border-b-2 border-transparent hover:border-teal-600"
+          data-tab="configuration">Configuration</button>
+        <button
+          class="flex-1 text-center py-3 px-1 text-gray-500 hover:text-teal-600 font-medium border-b-2 border-transparent hover:border-teal-600"
+          data-tab="github">GitHub</button>
+      </nav>
+    </header>
+
+    <main id="icon-tab">
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Output Type</h2>
+        <div class="grid grid-cols-3 gap-4">
+          <label
+            class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <input checked class="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType" type="checkbox" value="svg" />
+            <span class="ml-3 text-gray-700 font-medium">SVG</span>
+          </label>
+          <label
+            class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <input checked class="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType" type="checkbox" value="symbol" />
+            <span class="ml-3 text-gray-700 font-medium">Symbol</span>
+          </label>
+          <label
+            class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <input checked class="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType" type="checkbox" value="sfSymbol" />
+            <span class="ml-3 text-gray-700 font-medium">SF Symbol</span>
+          </label>
+        </div>
+      </section>
+      <div class="mb-8">
+        <button
+          class="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">
+          Generate
+        </button>
+      </div>
+      <section>
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Output Preview</h2>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-6">
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">home</span>
+            <p class="text-gray-600 text-sm">home</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+          <div class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <span class="material-icons text-5xl text-gray-700 mb-2">edit</span>
+            <p class="text-gray-600 text-sm">pen</p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <main id="configuration-tab">
+
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">SF Symbols Sizes</h2>
+        <div class="overflow-x-automax-h-100 overflow-y-auto
+  [&::-webkit-scrollbar-track]:rounded-full
+  [&::-webkit-scrollbar-track]:bg-gray-100
+  [&::-webkit-scrollbar-thumb]:rounded-full
+  [&::-webkit-scrollbar-thumb]:bg-gray-300
+  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
+          <table class="w-full border-collapse border border-gray-400 bg-white text-sm">
+            <thead>
+              <tr>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Variations</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Ultralight</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Thin</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Light</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Regular</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Medium</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Semibold</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Bold</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Heavy</th>
+                <th class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Black</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Small</td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input checked class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-ultralight" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-thin" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-light" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input checked class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-regular" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-medium" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-semibold" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-bold" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-heavy" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input checked class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="s-black" />
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Medium</td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-ultralight" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-thin" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-light" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-regular" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-medium" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-semibold" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-bold" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-heavy" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="m-black" />
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 p-4 text-left font-semibold text-gray-900">Large</td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-ultralight" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-thin" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-light" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-regular" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-medium" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-semibold" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-bold" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-heavy" />
+                </td>
+                <td class="border border-gray-300 p-4 text-center font-semibold text-gray-900">
+                  <input class="form-checkbox h-4 w-4 border-gray-400" name="sf-symbols-sizes" type="checkbox"
+                    value="l-black" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <main id="github-tab"></main>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('#nav-tab button');
+    const tabContents = document.querySelectorAll('main[id$="-tab"]');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => t.classList.remove('tab-active', 'text-teal-600', 'border-teal-600'));
+        tab.classList.add('tab-active', 'text-teal-600', 'border-teal-600');
+        tab.classList.remove('text-gray-500');
+        tabContents.forEach((content) => content.classList.add('hidden'));
+        const targetTabContentId = `${tab.dataset.tab}-tab`;
+        document.getElementById(targetTabContentId)?.classList.remove('hidden');
+      });
+    });
+
+    tabs[0].classList.add('tab-active', 'text-teal-600', 'border-teal-600');
+    tabs[0].classList.remove('text-gray-500');
+
+    tabContents.forEach((content, index) => {
+      if (index !== 0) {
+        content.classList.add('hidden');
+        return;
+      }
+
+      content.classList.remove('hidden');
+      return;
+    });
+  </script>
+</body>
+
+</html>

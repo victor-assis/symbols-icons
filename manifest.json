@@ -1,0 +1,15 @@
+{
+  "name": "Symbols Icons",
+  "id": "symbols-icons",
+  "api": "1.0.0",
+  "main": "dist/plugin.js",
+  "ui": "dist/ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": ["https://api.github.com", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+    "reasoning": "",
+    "devAllowedDomains": []
+  }
+}
