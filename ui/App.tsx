@@ -1,54 +1,49 @@
-import { useState } from 'react'
-import Button from './components/button/button'
+import { useEffect, useState } from 'react';
+import Tabs from './components/tabs';
+import Alert from './components/alert';
+import { Tab } from '../shared/types/typings';
+import IconsScreen from './screens/icons-screen';
+import { GlobalProvider, useStore } from './store';
+import ConfigScreen from './screens/config-screen';
+import GithubScreen from './screens/github-screen';
 
-function App() {
-  // Create a state variable to count upcoming rectangles
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [tab, setTab] = useState<Tab>('icons');
 
-  /** Handles button clicks and sends data to the plugin’s backend */
-  function handleClick() {
-    // Increase the rectangle counter
-    const newCount = count + 1
+  const screens = {
+    icons: <IconsScreen />,
+    config: <ConfigScreen />,
+    github: <GithubScreen />,
+  };
 
-    /*
-        Ask React to change the value. Don’t increase the value right inside the `setCount` callback, because the state won’t be updated before the next re-render and we won’t be able to access the new value until then. See: https://react.dev/reference/react/useState#ive-updated-the-state-but-logging-gives-me-the-old-value
-         */
-    setCount(newCount)
-
-    // Send the message to the backend
-    parent.postMessage({ pluginMessage: { count: newCount } }, '*')
-  }
-
-  // Compose a gramatically correct label
-  const label =
-    count === 1
-      ? `A rectangle has been created`
-      : `${count} rectangles have been created`
+  useEffect(() => {
+    parent.postMessage({ pluginMessage: { type: 'OnLoad' } }, '*');
+  }, []);
 
   return (
-    <>
-      {/* Render a button */}
-      <Button
-        onClick={handleClick}
-        className="button"
-        style={{ width: '100%' }}
-      >
-        Create a rectangle
-      </Button>
-
-      {/* Render a label. Show it only if some rectangles have been created */}
-      <p
-        style={{
-          fontSize: '0.6rem',
-          marginTop: '0.5rem',
-          color: 'var(--figma-color-text-tertiary)',
-          textAlign: 'center'
-        }}
-      >
-        {count > 0 ? label : null}
-      </p>
-    </>
-  )
+    <GlobalProvider>
+      <InnerApp screens={screens} tab={tab} onSelect={setTab} />
+    </GlobalProvider>
+  );
 }
 
-export default App
+function InnerApp({
+  screens,
+  tab,
+  onSelect,
+}: {
+  screens: Record<Tab, JSX.Element>;
+  tab: Tab;
+  onSelect: (tab: Tab) => void;
+}) {
+  const { alertMessage, setAlertMessage } = useStore();
+  return (
+    <div className="h-full flex flex-col relative">
+      <div className="flex-1 overflow-auto p-4">{screens[tab]}</div>
+      <Tabs current={tab} onSelect={onSelect} />
+      {alertMessage && (
+        <Alert message={alertMessage} onClose={() => setAlertMessage('')} />
+      )}
+    </div>
+  );
+}

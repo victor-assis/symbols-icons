@@ -1,49 +1,137 @@
-// Handle the execution of the first command
-if (figma.command == 'plugin-command')
-  figma.closePlugin('The plugin command was executed')
+/**
+ * Entry point for the Symbols Icons Figma plugin.
+ * Handles communication between the UI and the Figma API.
+ */
+import { commitToGithub } from './github';
+import { getSerializedSelection } from './serialize';
 
-// Configure the command that involves a UI
-if (figma.command == 'plugin-command-with-ui') {
-  // Present a UI, providing it with Figma CSS color variables
-  figma.showUI(__html__, {
-    themeColors: true,
-    width: 300,
-    height: 62
-  })
+figma.showUI(__html__, { width: 490, height: 840 });
 
-  // Create a variable to store the rectangles that will be created
-  const rectangles: RectangleNode[] = []
+figma.ui.onmessage = async (msg) => {
+  const settings = {
+    OnLoad: () => {
+      if (figma.currentPage.selection.length > 0) {
+        sendSelectedNode();
+      }
+    },
+    getSymbolConfig: async () => {
+      const data = await figma.clientStorage.getAsync('symbolConfig');
+      figma.ui.postMessage({ type: 'symbolConfig', data });
+    },
+    saveSymbolConfig: async () => {
+      await figma.clientStorage.setAsync('symbolConfig', msg.data);
+    },
+    getGithubData: async () => {
+      const data = await figma.clientStorage.getAsync('githubData');
+      figma.ui.postMessage({ type: 'githubData', data });
+    },
+    saveGithubData: async () => {
+      await figma.clientStorage.setAsync('githubData', msg.data);
+    },
+    getTags: async () => {
+      const node = figma.getNodeById(msg.id);
+      if (node) {
+        try {
+          const data = node.getPluginData('tags');
+          const tags = data ? JSON.parse(data) : [];
+          figma.ui.postMessage({ type: 'tags', id: msg.id, tags });
+        } catch {
+          figma.ui.postMessage({ type: 'tags', id: msg.id, tags: [] });
+        }
+      }
+    },
+    setTags: async () => {
+      const node = figma.getNodeById(msg.id);
+      if (node) {
+        try {
+          node.setPluginData('tags', JSON.stringify(msg.tags ?? []));
+        } catch {
+          /* ignore errors */
+        }
+      }
+    },
+    setSvgs: async () => {
+      const nodes = figma.currentPage.selection;
+      void sendSerializedSelection(nodes, 'setSvgs');
+    },
+    githubCommit: async () => {
+      const nodes = figma.currentPage.selection
+        .map((node) => {
+          try {
+            let vector: SceneNode[] = [];
+            if (
+              node.type === 'FRAME' ||
+              node.type === 'COMPONENT' ||
+              node.type === 'INSTANCE'
+            ) {
+              vector = (
+                node as FrameNode | ComponentNode | InstanceNode
+              ).findChildren((child: SceneNode) => child.type === 'VECTOR');
+            }
+            return vector.length ? vector : node;
+          } catch {
+            return node;
+          }
+        })
+        .flat();
+      await commitToGithub({
+        ...msg.github,
+        svgs: await getSerializedSelection(nodes),
+      });
+      figma.ui.postMessage({ type: 'commitDone' });
+    },
+  };
 
-  /* Handle the message from the UI, being aware that it will be an object with the single `count` property */
-  figma.ui.onmessage = (message: { count: number }) => {
-    // Retrieve the number associated with the rectangle we’re about to create
-    const { count } = message
-
-    /* Initially, the UI contains only a button. So if we are creating the first rectangle, we should resize the UI to make room for the label that keeps track on the number of rectangles created */
-    figma.ui.resize(300, 88)
-
-    // Create a rectangle on the canvas
-    const rectangle = figma.createRectangle()
-
-    // Set the rectangle name, providing the index number
-    rectangle.name = 'rectangle-' + count
-
-    // If it’s not the first created rectangle, add a margin from the last one
-    if (rectangles.length) {
-      // Find the last rectangle
-      const lastRectangle = rectangles.slice(-1)[0]
-
-      // Add a margin
-      rectangle.x = lastRectangle.x + lastRectangle.width + 100
-    }
-
-    // Add the newly created rectangle to the list of created rectangles
-    rectangles.push(rectangle)
-
-    // Move the viewport to the rectangle
-    figma.viewport.scrollAndZoomIntoView([rectangle])
-
-    // Select the rectangle
-    figma.currentPage.selection = [rectangle]
+  if (msg.type && msg.type in settings) {
+    await (settings as Record<string, () => Promise<void> | void>)[msg.type]();
   }
-}
+};
+
+figma.on('selectionchange', () => sendSelectedNode());
+
+/**
+ * Sends the currently selected nodes to the UI.
+ */
+const sendSelectedNode = () => {
+  const nodes = figma.currentPage.selection
+    .map((node) => {
+      try {
+        let vector: SceneNode[] = [];
+        if (
+          node.type === 'FRAME' ||
+          node.type === 'COMPONENT' ||
+          node.type === 'INSTANCE'
+        ) {
+          vector = (
+            node as FrameNode | ComponentNode | InstanceNode
+          ).findChildren((child: SceneNode) => child.type === 'VECTOR');
+        }
+        return vector.length ? vector : node;
+      } catch {
+        return node;
+      }
+    })
+    .flat();
+
+  void sendSerializedSelection(nodes, 'setSvgs');
+
+  figma.ui.postMessage({
+    type: 'notifySelected',
+    files: nodes,
+  });
+};
+
+/**
+ * Serialize nodes and post them back to the UI.
+ */
+const sendSerializedSelection = async (
+  selection: readonly SceneNode[],
+  type: string,
+): Promise<void> => {
+  const svgs = await getSerializedSelection(selection);
+
+  figma.ui.postMessage({
+    type,
+    files: svgs,
+  });
+};
