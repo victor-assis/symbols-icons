@@ -1,0 +1,19 @@
+{
+  "name": "Symbols Icons",
+  "id": "1517517636525796940",
+  "api": "1.0.0",
+  "editorType": ["figma"],
+  "main": "dist/plugin/index.js",
+  "ui": "dist/ui/index.html",
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://api.github.com",
+      "https://cdn.tailwindcss.com",
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com"
+    ],
+    "reasoning": "",
+    "devAllowedDomains": []
+  }
+}
