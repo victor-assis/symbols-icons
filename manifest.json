@@ -1,11 +1,10 @@
 {
-  "name": "Symbols Icons",
+  "name": "Cross Icon Svg",
   "id": "1517517636525796940",
   "api": "1.0.0",
   "editorType": ["figma"],
   "main": "dist/plugin/index.js",
   "ui": "dist/ui/index.html",
-  "documentAccess": "dynamic-page",
   "networkAccess": {
     "allowedDomains": [
       "https://api.github.com",
