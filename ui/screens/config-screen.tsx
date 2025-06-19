@@ -12,14 +12,14 @@ export default function ConfigScreen() {
   }
 
   return (
-    <div>
-      <table style={{ width: '100%', fontSize: '0.6rem' }}>
+    <div className="flex flex-col gap-2 text-xs">
+      <table className="w-full">
         <tbody>
-          {sizes.map(s => (
-            <tr key={s}>
+          {sizes.map((s) => (
+            <tr key={s} className="h-5">
               <td>
                 <input
-                  type='checkbox'
+                  type="checkbox"
                   checked={selected.includes(s)}
                   onChange={() => toggle(s)}
                 />
@@ -30,11 +30,11 @@ export default function ConfigScreen() {
         </tbody>
       </table>
       <input
-        type='number'
-        placeholder='Tamanho'
+        type="number"
+        placeholder="Tamanho"
         value={custom}
-        onChange={e => setCustom(e.target.value)}
-        style={{ width: '100%', marginTop: '0.5rem' }}
+        onChange={(e) => setCustom(e.target.value)}
+        className="w-full border rounded px-1 py-0.5"
       />
     </div>
   )

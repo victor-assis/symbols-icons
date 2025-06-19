@@ -15,26 +15,26 @@ export default function GithubScreen() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-xs">
       <input
         value={repo}
-        onChange={e => setRepo(e.target.value)}
-        placeholder='Repositório'
-        style={{ width: '100%', marginBottom: '0.25rem' }}
+        onChange={(e) => setRepo(e.target.value)}
+        placeholder="Repositório"
+        className="w-full border rounded px-1 py-0.5"
       />
       <input
         value={branch}
-        onChange={e => setBranch(e.target.value)}
-        placeholder='Branch'
-        style={{ width: '100%', marginBottom: '0.25rem' }}
+        onChange={(e) => setBranch(e.target.value)}
+        placeholder="Branch"
+        className="w-full border rounded px-1 py-0.5"
       />
       <input
         value={message}
-        onChange={e => setMessage(e.target.value)}
-        placeholder='Mensagem'
-        style={{ width: '100%', marginBottom: '0.5rem' }}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Mensagem"
+        className="w-full border rounded px-1 py-0.5"
       />
-      <Button type='submit' style={{ width: '100%' }}>
+      <Button type="submit" className="w-full mt-1">
         Commitar
       </Button>
     </form>

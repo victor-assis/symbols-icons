@@ -11,26 +11,26 @@ export default function IconsScreen() {
   const previews = [0, 1, 2]
 
   return (
-    <div>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <label>
-          <input type='checkbox' checked={outputs.svg} onChange={() => toggle('svg')} /> SVG
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2 text-xs">
+        <label className="flex items-center gap-1">
+          <input type="checkbox" checked={outputs.svg} onChange={() => toggle('svg')} /> SVG
         </label>
-        <label>
-          <input type='checkbox' checked={outputs.symbol} onChange={() => toggle('symbol')} /> Symbol
+        <label className="flex items-center gap-1">
+          <input type="checkbox" checked={outputs.symbol} onChange={() => toggle('symbol')} /> Symbol
         </label>
-        <label>
-          <input type='checkbox' checked={outputs.sf} onChange={() => toggle('sf')} /> SF Symbol
+        <label className="flex items-center gap-1">
+          <input type="checkbox" checked={outputs.sf} onChange={() => toggle('sf')} /> SF Symbol
         </label>
       </div>
-      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-        {previews.map(p => (
-          <svg key={p} width='24' height='24'>
-            <circle cx='12' cy='12' r='10' fill='var(--figma-color-bg-brand)' />
+      <div className="flex gap-2">
+        {previews.map((p) => (
+          <svg key={p} width="24" height="24">
+            <circle cx="12" cy="12" r="10" className="fill-blue-600" />
           </svg>
         ))}
       </div>
-      <Button style={{ width: '100%', marginTop: '0.5rem' }}>Gerar</Button>
+      <Button className="w-full mt-2">Gerar</Button>
     </div>
   )
 }

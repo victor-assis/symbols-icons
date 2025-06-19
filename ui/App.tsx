@@ -13,9 +13,9 @@ export default function App() {
   else content = <GithubScreen />
 
   return (
-    <>
+    <div className="h-full flex flex-col pb-8">
+      <div className="flex-1 overflow-auto">{content}</div>
       <Tabs current={tab} onSelect={setTab} />
-      {content}
-    </>
+    </div>
   )
 }
