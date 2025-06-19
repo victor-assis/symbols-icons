@@ -4,10 +4,11 @@ import styles from './button.module.scss'
  * Represents the properties of a button component
  */
 export interface ButtonProps {
-    onClick?: React.MouseEventHandler<HTMLButtonElement>,
-    children?: string,
-    className?: string,
-    style?: React.CSSProperties
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  children?: string
+  className?: string
+  style?: React.CSSProperties
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>['type']
 }
 
 /**
@@ -17,8 +18,9 @@ export interface ButtonProps {
  */
 export default function Button(props: ButtonProps) {
   return <button
+    type={props.type ?? 'button'}
     onClick={props.onClick}
-    className={styles.button + ' ' + props.className}
+    className={styles.button + (props.className ? ' ' + props.className : '')}
     style={props.style}
   >
     {props.children ?? 'Button'}
