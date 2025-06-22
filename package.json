@@ -1,7 +1,7 @@
 {
-  "name": "symbols-icons",
+  "name": "cross-icon-svg",
   "version": "3.3.0",
-  "description": "Figma Plugin to create svg symbols",
+  "description": "Figma Plugin to create multiple icons from a SVG files.",
   "type": "module",
   "engines": {
     "node": ">=20.6.0"

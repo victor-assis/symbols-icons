@@ -1,86 +1,288 @@
-import { useState } from 'react'
+import JSZip from 'jszip';
+import { Base64 } from 'js-base64';
+import { useEffect, useState } from 'react';
+import { useStore } from '../store';
+import { IJsonType } from '../../shared/types/typings';
+import templateUrl from '../../shared/sfSymbol/template.svg';
+import { generateExample } from '../../shared/example/generateExample';
+import { generateSFSymbol } from '../../shared/sfSymbol/convertSFSymbol';
+import { generateJsonFile } from '../../shared/jsonFile/convertJsonFile';
+import { generateSvgSymbol } from '../../shared/svgSymbol/convertSvgSymbol';
+
+function bytesToString(bytes: Uint8Array): string {
+  return Base64.decode(Base64.fromUint8Array(bytes));
+}
+
+const templateData = templateUrl.split(',')[1];
+const templateBytes = Base64.toUint8Array(templateData);
+const template = bytesToString(templateBytes);
 
 export default function IconsScreen() {
-  const [outputs, setOutputs] = useState({ svg: false, symbol: false, sf: false })
+  const {
+    outputs,
+    setOutputs,
+    svgSymbol,
+    setSvgSymbol,
+    jsonFile,
+    setJsonFile,
+    sfSize,
+    setSfSize,
+    sfVariations,
+    setSfVariations,
+    filesName,
+    setFilesName,
+    setGithubForm,
+  } = useStore();
+  const [nodes, setNodes] = useState<SceneNode[]>([]);
+  const [sfSymbols, setSFSymbols] = useState<string[]>([]);
 
-  function toggle(name: keyof typeof outputs) {
-    setOutputs({ ...outputs, [name]: !outputs[name] })
+  function downloadBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
-  const tickSvg =
-    "url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(16,21,24)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e')"
+  async function downloadOutputs(
+    json: IJsonType[],
+    symbol: string,
+    sfSvgs: string[],
+  ) {
+    const zip = new JSZip();
+    if (outputs.json) {
+      zip.file(`${filesName}.json`, JSON.stringify(json, null, 2));
+    }
+    if (outputs.symbol) {
+      zip.file(`${filesName}.svg`, symbol);
 
-  const previews = [
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuClECe-pPZGiO592NhOM3wy-7HZJuUQH9Z6bmkLexRZfUmjKT5sB24_XJUv3NKehRwDXABwBTw7vNWnyuAh0493GfV3UwxNqztN9L9cqJpnyakxyps1wsSdg08NDk0IdAc9NhjjzB0mGJ24kdkAfx3JwkETWvAAmeyM68By4ixEVigMqUYX6Bn0jnkL4VaXJPozV4jyEZeGPoriK1SAwNnt6jF11vPDDPmbN9UmYv5-MLQTapBvjXuVaPORXbyT4ronvLa8J_AJVLJZ',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuBFhgGLmb72P3woTyrH3fFBS55Ke2_6SaxDD_cftOQUHD-P_7nf49Z-OCmm3sBArZiv6PcJIi3_FFeYJbtTEHgnHJl1tcBJ_3UV8OZy2MmfT0YaH3PlQDAm3t_xwHsYs_JoM7enoKqZ3CKG13_KDncdjzoW-hs2Fm06OhTaZQkRNGyNh5tc-no50q1um7Hmea59yMM5lc7c3gJIi3_ju8d9EE3naMkjwqa1zIc4jMsQqwBwn4Zo-zuohd0FZ3JdaJ_Kl6fivqgbu-Yn',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuCJsq9j7NpAQ3hGtwvJjEsAxAou_ehsxgGWAZsP6hcMXG_JDNIMSgcjf4txvJO4eql1_djWZD88ciajESY7HJ6PmYM6qGt26Nsx5EtIf4FBTYw-0hokon8RrZcU6FPUPFATlE3TOOfOiBnSwjkAo-nUuPU4fa3QPRSjFhUs3dZ4z78j-Fgg8t9abiE-4JxP50wBYb31mH0telXGqDtJorz1qWEQbD6mt8FQP4mc7z6CrYmhfWX5ArW59LXfqVAjyG2jBTCCLFz9DN6e',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuDGwH7WSz1x5fWR4KZr8s1XTjxFl6IQ_SiKG97GlMs6O6NA0VC7I_tVH1Ugbx73wRRlTk-XgnCdgKyIxXEsL2T5TstpQfJ7uq-H-wKduPL8Qx_nWFTOtLmhZ5KLeqBSn7s-yOhUxrq1Dv5I6V3EhUBDSxalMVaDgXbtef0f2ceBhbq9a0DGc9eH69eSjnW9_ydp00YlF3d0EswqMC28dKKgHIcRCmGn0qmiK55t06CWrIbPqgkHwNWTugLqR84H_rPTpZaHc_qDbwH-'
-  ]
+      console.log(outputs);
+      if (outputs.example) {
+        const exampleFiles = generateExample(json, symbol);
+        const example = zip.folder('example');
+        exampleFiles.forEach((f: { name: string; content: string }) => {
+          example?.file(f.name, f.content);
+        });
+      }
+    }
+    if (outputs.svg) {
+      const svgsFolder = zip.folder('svgs');
+      json.forEach((icon) => {
+        svgsFolder?.file(`${icon.name}.svg`, icon.svg);
+      });
+    }
+    if (outputs.sf) {
+      const sfFolder = zip.folder('sfsymbols');
+      sfSvgs.forEach((svg, idx) => {
+        const name = json[idx]?.name ?? `icon-${idx}`;
+        sfFolder?.file(`${name}.svg`, svg);
+      });
+    }
+    const content = await zip.generateAsync({ type: 'blob' });
+    downloadBlob(content, `${filesName}.zip`);
+  }
+
+  useEffect(() => {
+    parent.postMessage({ pluginMessage: { type: 'getSymbolConfig' } }, '*');
+    parent.postMessage({ pluginMessage: { type: 'getGithubData' } }, '*');
+    window.onmessage = (event) => {
+      if (!event.data.pluginMessage) {
+        return;
+      }
+
+      const { type, files, data } = event.data.pluginMessage;
+
+      const events = {
+        notifySelected: () => {
+          setNodes(files);
+        },
+        setSvgs: async () => {
+          if (files.length) {
+            setSFSymbols(
+              generateSFSymbol(template, files, sfVariations, sfSize),
+            );
+            setSvgSymbol(generateSvgSymbol(files));
+            setJsonFile(generateJsonFile(files));
+          }
+        },
+        fontConfig: () => {
+          if (!data) return;
+          if (data.outputs) setOutputs(data.outputs);
+          if (typeof data.sfSize === 'number') setSfSize(data.sfSize);
+          if (data.sfVariations)
+            setSfVariations(new Set<string>(data.sfVariations));
+          if (data.filesName) setFilesName(data.filesName);
+        },
+        githubData: () => {
+          if (data) setGithubForm(data);
+        },
+      };
+
+      if (type && type in events) {
+        (events as Record<string, () => void>)[type]();
+      }
+    };
+  }, []);
+
+  function toggle(name: keyof typeof outputs) {
+    setOutputs({ ...outputs, [name]: !outputs[name] });
+  }
+
+  async function updateIcons() {
+    await downloadOutputs(jsonFile, svgSymbol, sfSymbols);
+
+    parent.postMessage(
+      { pluginMessage: { type: 'setSvgs', size: sfSize } },
+      '*',
+    );
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'saveSymbolConfig',
+          data: {
+            outputs,
+            sfSize,
+            sfVariations: Array.from(sfVariations),
+            filesName,
+          },
+        },
+      },
+      '*',
+    );
+  }
 
   return (
-    <div
-      className="flex flex-col justify-between h-full bg-gray-50 overflow-x-hidden"
-      style={{ '--checkbox-tick-svg': tickSvg } as React.CSSProperties}
-    >
-      <div>
-        <div className="flex items-center bg-gray-50 p-4 pb-2 justify-between">
-          <div className="text-[#101518] flex size-12 shrink-0 items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-              <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z" />
-            </svg>
-          </div>
-          <h2 className="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">
-            Export Icons
-          </h2>
-        </div>
-        <h3 className="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
-          Select Format
-        </h3>
-        <div className="px-4">
-          <label className="flex gap-x-3 py-3 flex-row">
+    <div className="flex flex-col h-full bg-gray-50 overflow-x-hidden">
+      <div className="flex items-center bg-gray-50 p-4 pb-2 justify-between">
+        <h2 className="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">
+          Export Icons
+        </h2>
+      </div>
+
+      <section className="flex flex-col gap-3 px-4 py-4">
+        <h3 className="text-md text-gray-700 mb-4">Select Format</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
             <input
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType"
               type="checkbox"
+              value="svg"
               checked={outputs.svg}
               onChange={() => toggle('svg')}
-              className="h-5 w-5 rounded border-[#d4dce2] border-2 bg-transparent text-[#dce8f3] checked:bg-[#dce8f3] checked:border-[#dce8f3] checked:bg-[image:var(--checkbox-tick-svg)] focus:ring-0 focus:ring-offset-0 focus:border-[#d4dce2] focus:outline-none"
             />
-            <p className="text-[#101518] text-base font-normal leading-normal">SVG</p>
+            <span className="ml-3 text-gray-700 font-medium">SVG</span>
           </label>
-          <label className="flex gap-x-3 py-3 flex-row">
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
             <input
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType"
               type="checkbox"
+              value="symbol"
               checked={outputs.symbol}
               onChange={() => toggle('symbol')}
-              className="h-5 w-5 rounded border-[#d4dce2] border-2 bg-transparent text-[#dce8f3] checked:bg-[#dce8f3] checked:border-[#dce8f3] checked:bg-[image:var(--checkbox-tick-svg)] focus:ring-0 focus:ring-offset-0 focus:border-[#d4dce2] focus:outline-none"
             />
-            <p className="text-[#101518] text-base font-normal leading-normal">Symbol</p>
+            <span className="ml-3 text-gray-700 font-medium">Symbol</span>
           </label>
-          <label className="flex gap-x-3 py-3 flex-row">
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
             <input
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType"
               type="checkbox"
+              value="sf"
               checked={outputs.sf}
               onChange={() => toggle('sf')}
-              className="h-5 w-5 rounded border-[#d4dce2] border-2 bg-transparent text-[#dce8f3] checked:bg-[#dce8f3] checked:border-[#dce8f3] checked:bg-[image:var(--checkbox-tick-svg)] focus:ring-0 focus:ring-offset-0 focus:border-[#d4dce2] focus:outline-none"
             />
-            <p className="text-[#101518] text-base font-normal leading-normal">SF Symbol</p>
+            <span className="ml-3 text-gray-700 font-medium">SF Symbol</span>
+          </label>
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <input
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType"
+              type="checkbox"
+              value="json"
+              checked={outputs.json}
+              onChange={() => toggle('json')}
+            />
+            <span className="ml-3 text-gray-700 font-medium">JSON</span>
+          </label>
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <input
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+              name="outputType"
+              type="checkbox"
+              value="example"
+              checked={outputs.example}
+              onChange={() => toggle('example')}
+            />
+            <span className="ml-3 text-gray-700 font-medium">Example</span>
+          </label>
+          <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-not-allowed flex-1 bg-gray-100 shadow-sm opacity-50 select-none">
+            <input
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400"
+              name="outputType"
+              type="checkbox"
+              value="kotlin"
+              checked={outputs.kt}
+              onChange={() => toggle('kt')}
+              disabled
+            />
+            <span className="ml-3 text-gray-400 font-medium">
+              kotlin - coming soon
+            </span>
           </label>
         </div>
-        <h3 className="text-[#101518] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
-          Preview
-        </h3>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-          {previews.map((src) => (
-            <div key={src} className="flex flex-col gap-3">
-              <div className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" style={{ backgroundImage: `url(${src})` }}></div>
-            </div>
-          ))}
+
+        <div className="flex py-3">
+          <button
+            onClick={updateIcons}
+            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 flex-1 bg-[#dce8f3] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em]"
+          >
+            <span className="truncate">Generate</span>
+          </button>
         </div>
-      </div>
-      <div className="flex px-4 py-3">
-        <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 flex-1 bg-[#dce8f3] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em]">
-          <span className="truncate">Generate</span>
-        </button>
-      </div>
+
+        {!nodes || nodes.length === 0 ? (
+          <div
+            className="flex items-center p-4 mb-4 text-gray-700 border-t-4 border-blue-300 bg-blue-50 dark:border-blue-800"
+            role="alert"
+          >
+            <div className="ms-3 text-sm font-medium">
+              No selected icon found!
+            </div>
+          </div>
+        ) : (
+          <>
+            <div
+              className="flex items-center p-4 mb-4 text-gray-700 border-t-4 border-blue-300 bg-blue-50 dark:border-blue-800"
+              role="alert"
+            >
+              <div className="ms-3 text-sm font-medium">{`selected ${
+                nodes.length
+              } vector${nodes.length > 1 ? 's' : ''}`}</div>
+            </div>
+          </>
+        )}
+
+        <h3 className="text-md text-gray-700 mb-4">Preview</h3>
+
+        <div dangerouslySetInnerHTML={{ __html: svgSymbol ?? '' }} />
+        <div className="grid grid-cols-2 gap-3">
+          {jsonFile &&
+            jsonFile.map((icon: IJsonType, index: number) => (
+              <div className="flex items-center gap-4 p-4 border border-gray-300 rounded-lg">
+                <svg width={sfSize} height={sfSize} key={index}>
+                  <use xlinkHref={`#${icon.name}`} />
+                </svg>
+                <div className="font-medium text-gray-800 truncate">
+                  <div>{icon.name}</div>
+                  {/* <div className="text-sm text-gray-600">{icon.figmaName}</div> */}
+                </div>
+              </div>
+            ))}
+        </div>
+      </section>
     </div>
-  )
+  );
 }
