@@ -1,3 +1,6 @@
+/**
+ * Utilities to convert exported SVGs into SF Symbols templates.
+ */
 import { load, CheerioAPI } from 'cheerio';
 
 const DEFAULT_ICON_SIZE = 32;
@@ -23,6 +26,10 @@ const SYMBOL_SCALE_ADDITIONS = [
 ];
 const BASE_SYMBOL_SCALE = 0.775;
 
+/**
+ * Read a guide value from the template.
+ * Throws an error when the guide is missing or invalid.
+ */
 function getGuideValue($: CheerioAPI, axis: 'x' | 'y', xmlId: string): number {
   const node = $(`#${xmlId}`);
   if (!node.length) throw new Error(`Guide "${xmlId}" não encontrado`);
@@ -32,6 +39,15 @@ function getGuideValue($: CheerioAPI, axis: 'x' | 'y', xmlId: string): number {
   return parseFloat(v1);
 }
 
+/**
+ * Generate a list of SF Symbol compatible SVGs based on a template.
+ *
+ * @param template - SVG template with guides.
+ * @param icons - Icons exported from Figma.
+ * @param selected - Set of selected size/weight combinations.
+ * @param size - Desired output size.
+ * @returns Array of SF Symbol SVG strings.
+ */
 export function generateSFSymbol(
   template: string,
   icons: { svg: string }[],
@@ -51,6 +67,9 @@ export function generateSFSymbol(
   return sfSymbols;
 }
 
+/**
+ * Internal helper that modifies the template with the icon data.
+ */
 function convertSFSymbol(
   template: string,
   iconSvg: string,

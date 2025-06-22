@@ -14,7 +14,18 @@ async function loadIcons() {
   list.innerHTML = '';
   icons.forEach((icon) => {
     const li = document.createElement('li');
-    li.innerHTML = `<svg class="icon"><use href="#${icon.name}"></use></svg><span>${icon.name}</span>`;
+    li.innerHTML = `\
+      <svg class="icon"><use href="#${icon.name}"></use></svg>\
+      <span>${icon.name}</span>\
+      <button class="copy-btn" data-name="${icon.name}">Copy</button>`;
+    li.querySelector('button').addEventListener('click', (e) => {
+      const name = e.currentTarget.getAttribute('data-name');
+      navigator.clipboard.writeText(name);
+      e.currentTarget.textContent = 'Copied!';
+      setTimeout(() => {
+        e.currentTarget.textContent = 'Copy';
+      }, 1000);
+    });
     list.appendChild(li);
   });
 }
@@ -25,3 +36,4 @@ document.getElementById('format').addEventListener('change', (e) => {
 
 loadSymbols();
 loadIcons();
+document.getElementById('icons-list').className = 'grid';

@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Symbol Icons Demo</title>
+  <title>Icon Preview</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Symbol Icons Demo</h1>
+  <header>
+    <h1>Icon Preview</h1>
+    <div class="format">
+      <label for="format">View as:</label>
+      <select id="format">
+        <option value="grid">Grid</option>
+        <option value="list">List</option>
+      </select>
+    </div>
+  </header>
   <div id="symbols-container" style="display:none"></div>
-  <div class="format">
-    <label for="format">Format:</label>
-    <select id="format">
-      <option value="list">List</option>
-      <option value="grid">Grid</option>
-    </select>
-  </div>
-  <ul id="icons-list" class="list"></ul>
+  <ul id="icons-list" class="grid"></ul>
   <script src="script.js"></script>
 </body>
 </html>

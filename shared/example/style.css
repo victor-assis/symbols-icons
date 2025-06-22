@@ -1,31 +1,55 @@
 body {
-  font-family: sans-serif;
+  font-family: system-ui, sans-serif;
   margin: 20px;
+  background: #f9fafb;
+  color: #1f2937;
 }
 
-#icons-list.list li {
+header {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
-#icons-list.grid {
+#icons-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 16px;
   padding: 0;
 }
 
+#icons-list.list {
+  grid-template-columns: 1fr;
+}
+
 #icons-list li {
   list-style: none;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .icon {
   width: 40px;
   height: 40px;
-  margin-right: 8px;
 }
 
-.format {
-  margin-bottom: 16px;
+.copy-btn {
+  padding: 2px 6px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.copy-btn:active {
+  background: #d1d5db;
 }
