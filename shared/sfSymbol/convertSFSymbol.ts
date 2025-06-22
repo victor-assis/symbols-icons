@@ -1,7 +1,6 @@
 import { load, CheerioAPI } from 'cheerio';
 
-const ICON_WIDTH = 32;
-const ICON_HEIGHT = 32;
+const DEFAULT_ICON_SIZE = 32;
 const ADDITIONAL_SCALING = 1.7;
 const MARGIN_LINE_WIDTH = 0.5;
 const ADDITIONAL_HORIZONTAL_MARGIN = 4;
@@ -33,12 +32,17 @@ function getGuideValue($: CheerioAPI, axis: 'x' | 'y', xmlId: string): number {
   return parseFloat(v1);
 }
 
-export function generateSFSymbol(template: string, icons: { svg: string }[]) {
+export function generateSFSymbol(
+  template: string,
+  icons: { svg: string }[],
+  selected: Set<string>,
+  size = DEFAULT_ICON_SIZE,
+) {
   const sfSymbols = [];
 
   for (const icon of icons) {
     try {
-      sfSymbols.push(convertSFSymbol(template, icon.svg));
+      sfSymbols.push(convertSFSymbol(template, icon.svg, selected, size));
     } catch (err) {
       console.error(err);
     }
@@ -47,7 +51,14 @@ export function generateSFSymbol(template: string, icons: { svg: string }[]) {
   return sfSymbols;
 }
 
-function convertSFSymbol(template: string, iconSvg: string): string {
+function convertSFSymbol(
+  template: string,
+  iconSvg: string,
+  selected: Set<string>,
+  size: number,
+): string {
+  const ICON_WIDTH = size;
+  const ICON_HEIGHT = size;
   const $tpl = load(template, { xmlMode: true });
   const $icon = load(iconSvg, { xmlMode: true });
 
@@ -95,6 +106,17 @@ function convertSFSymbol(template: string, iconSvg: string): string {
     caplineY = getGuideValue($tpl, 'y', `Capline-${fscl}`);
     for (let wi = 0; wi < FONT_WEIGHTS.length; wi++) {
       const fw = FONT_WEIGHTS[wi];
+      const checkboxId = `${fscl.toLowerCase()}-${fw.toLowerCase()}`;
+      const nodeId = `${fw}-${fscl}`;
+      const $node = $sym(`#${nodeId}`);
+      if (!$node.length) {
+        continue;
+      }
+      if (!selected.has(checkboxId)) {
+        $node.remove();
+        continue;
+      }
+
       scaleFactor += SYMBOL_SCALE_ADDITIONS[wi];
       const finalScale = scale0 * scaleFactor;
 
@@ -108,11 +130,6 @@ function convertSFSymbol(template: string, iconSvg: string): string {
             SPACE_BETWEEN_CENTERS * Math.abs(idxDiff) -
             (scaledW * scaleFactor) / 2;
       const ty = (baselineY + caplineY) / 2 - (scaledH * scaleFactor) / 2;
-      const nodeId = `${fw}-${fscl}`;
-      const $node = $sym(`#${nodeId}`);
-      if (!$node.length) {
-        continue;
-      }
       $node.attr(
         'transform',
         `matrix(${finalScale} 0 0 ${finalScale} ${tx} ${ty})`,
@@ -128,3 +145,4 @@ function convertSFSymbol(template: string, iconSvg: string): string {
 
   return $sym.xml();
 }
+

@@ -14,6 +14,7 @@ figma.ui.onmessage = async (msg) => {
       void sendSerializedSelection(
         nodes,
         'setSvgs',
+        msg.size,
         // msg.hasLigatura,
         // msg.fontsConfig,
       );
@@ -59,8 +60,9 @@ const sendSelectedNode = () => {
 const sendSerializedSelection = async (
   selection: readonly SceneNode[],
   type: string,
+  size?: number,
 ): Promise<void> => {
-  const svgs = await getSerializedSelection(selection);
+  const svgs = await getSerializedSelection(selection, size);
 
   figma.ui.postMessage({
     type,

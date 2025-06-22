@@ -2,13 +2,15 @@ import { ISerializedSVG } from '../shared/types/typings';
 
 export const getSerializedSelection = async (
   selection: readonly SceneNode[],
-): Promise<ISerializedSVG[]> => await Promise.all(selection.map(serialize));
+  size = 32,
+): Promise<ISerializedSVG[]> =>
+  await Promise.all(selection.map((node) => serialize(node, size)));
 
-const serialize = async (node: SceneNode): Promise<ISerializedSVG> => {
+const serialize = async (node: SceneNode, size: number): Promise<ISerializedSVG> => {
   const svg: string = await node
     .exportAsync({ format: 'SVG' })
     .then((res) => String.fromCharCode(...res))
-    .then((rawSvg) => fixSvgSizeAndViewBox(rawSvg, 32, 32))
+    .then((rawSvg) => fixSvgSizeAndViewBox(rawSvg, size, size))
     .catch((err) => {
       console.error(err);
       return '';

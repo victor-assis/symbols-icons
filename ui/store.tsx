@@ -15,6 +15,10 @@ interface Store {
   setSvgSymbol: React.Dispatch<React.SetStateAction<string>>;
   jsonFile: IJsonType[];
   setJsonFile: React.Dispatch<React.SetStateAction<IJsonType[]>>;
+  sfSize: number;
+  setSfSize: React.Dispatch<React.SetStateAction<number>>;
+  sfVariations: Set<string>;
+  setSfVariations: React.Dispatch<React.SetStateAction<Set<string>>>;
   githubForm: IFormGithub;
   setGithubForm: React.Dispatch<React.SetStateAction<IFormGithub>>;
 }
@@ -39,6 +43,10 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [outputs, setOutputs] = useState<Outputs>(defaultOutputs);
   const [svgSymbol, setSvgSymbol] = useState('');
   const [jsonFile, setJsonFile] = useState<IJsonType[]>([]);
+  const [sfSize, setSfSize] = useState<number>(32);
+  const [sfVariations, setSfVariations] = useState<Set<string>>(
+    new Set(['s-ultralight', 's-regular', 's-black'])
+  );
   const [githubForm, setGithubForm] = useState<IFormGithub>(defaultGithubForm);
 
   return (
@@ -50,6 +58,10 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setSvgSymbol,
         jsonFile,
         setJsonFile,
+        sfSize,
+        setSfSize,
+        sfVariations,
+        setSfVariations,
         githubForm,
         setGithubForm,
       }}

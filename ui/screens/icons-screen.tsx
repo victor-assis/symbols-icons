@@ -24,6 +24,8 @@ export default function IconsScreen() {
     setSvgSymbol,
     jsonFile,
     setJsonFile,
+    sfSize,
+    sfVariations,
   } = useStore();
   const [nodes, setNodes] = useState<SceneNode[]>([]);
   const [sfsymbols, setSFSymbols] = useState<string[]>([]);
@@ -48,11 +50,11 @@ export default function IconsScreen() {
             // const icons = await exportAllIcons();
             // const zip = new JSZip();
 
-            setSFSymbols(generateSFSymbol(template, files));
+            setSFSymbols(generateSFSymbol(template, files, sfVariations, sfSize));
             setSvgSymbol(generateSvgSymbol(files));
             setJsonFile(generateJsonFile(files));
 
-            const t1 = generateSFSymbol(template, files);
+            const t1 = generateSFSymbol(template, files, sfVariations, sfSize);
             const t2 = generateSvgSymbol(files);
             const t3 = generateJsonFile(files);
 
@@ -76,7 +78,7 @@ export default function IconsScreen() {
   }
 
   function updateIcons() {
-    parent.postMessage({ pluginMessage: { type: 'setSvgs' } }, '*');
+    parent.postMessage({ pluginMessage: { type: 'setSvgs', size: sfSize } }, '*');
   }
 
   return (
@@ -174,7 +176,7 @@ export default function IconsScreen() {
           {jsonFile &&
             jsonFile.map((icon: IJsonType, index: number) => (
               <div className="flex items-center gap-4 p-4 border border-gray-300 rounded-lg">
-                <svg width="32" height="32" key={index}>
+                <svg width={sfSize} height={sfSize} key={index}>
                   <use xlinkHref={`#${icon.name}`} />
                 </svg>
                 <div className="font-medium text-gray-800 truncate">
