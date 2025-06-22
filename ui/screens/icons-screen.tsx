@@ -35,6 +35,7 @@ export default function IconsScreen() {
   } = useStore();
   const [nodes, setNodes] = useState<SceneNode[]>([]);
   const [sfSymbols, setSFSymbols] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   function downloadBlob(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob);
@@ -55,9 +56,8 @@ export default function IconsScreen() {
       zip.file(`${filesName}.json`, JSON.stringify(json, null, 2));
     }
     if (outputs.symbol) {
-      zip.file(`${filesName}.svg`, symbol);
+      zip.file(`${filesName}-defs.svg`, symbol);
 
-      console.log(outputs);
       if (outputs.example) {
         const exampleFiles = generateExample(json, symbol);
         const example = zip.folder('example');
@@ -130,6 +130,8 @@ export default function IconsScreen() {
   }
 
   async function updateIcons() {
+    if (loading) return;
+    setLoading(true);
     await downloadOutputs(jsonFile, svgSymbol, sfSymbols);
 
     parent.postMessage(
@@ -150,6 +152,7 @@ export default function IconsScreen() {
       },
       '*',
     );
+    setLoading(false);
   }
 
   return (
@@ -237,9 +240,14 @@ export default function IconsScreen() {
         <div className="flex py-3">
           <button
             onClick={updateIcons}
-            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 flex-1 bg-[#dce8f3] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em]"
+            disabled={loading}
+            className="flex items-center justify-center overflow-hidden rounded-full h-10 flex-1 bg-[#dce8f3] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em] disabled:opacity-50 cursor-pointer"
           >
-            <span className="truncate">Generate</span>
+            {loading ? (
+              <span className="truncate">Generating...</span>
+            ) : (
+              <span className="truncate">Generate</span>
+            )}
           </button>
         </div>
 
@@ -277,7 +285,6 @@ export default function IconsScreen() {
                 </svg>
                 <div className="font-medium text-gray-800 truncate">
                   <div>{icon.name}</div>
-                  {/* <div className="text-sm text-gray-600">{icon.figmaName}</div> */}
                 </div>
               </div>
             ))}

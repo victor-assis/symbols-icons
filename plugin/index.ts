@@ -1,3 +1,7 @@
+/**
+ * Entry point for the Symbols Icons Figma plugin.
+ * Handles communication between the UI and the Figma API.
+ */
 import { getSerializedSelection } from './serialize';
 import template from '../shared/sfSymbol/template.svg';
 import { IFormGithub, IJsonType } from '../shared/types/typings';
@@ -50,6 +54,9 @@ figma.ui.onmessage = async (msg) => {
 };
 
 figma.on('selectionchange', () => sendSelectedNode());
+/**
+ * Sends the currently selected nodes to the UI.
+ */
 
 const sendSelectedNode = () => {
   const nodes = figma.currentPage.selection
@@ -79,6 +86,9 @@ const sendSelectedNode = () => {
     files: nodes,
   });
 };
+/**
+ * Serialize nodes and post them back to the UI.
+ */
 
 const sendSerializedSelection = async (
   selection: readonly SceneNode[],
@@ -91,6 +101,9 @@ const sendSerializedSelection = async (
     files: svgs,
   });
 };
+/**
+ * Commit generated files directly to GitHub using the provided form data.
+ */
 
 const commitToGithub = async (form: IFormGithub): Promise<void> => {
   const {
@@ -198,4 +211,6 @@ const commitToGithub = async (form: IFormGithub): Promise<void> => {
       }),
     });
   }
+
+  figma.ui.postMessage({ type: 'commitDone' });
 };

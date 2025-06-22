@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useStore } from '../store';
 import { IFormGithub } from '../../shared/types/typings';
 
@@ -15,6 +16,8 @@ export default function GithubScreen() {
     mainBranch,
   } = githubForm;
 
+  const [loading, setLoading] = useState(false);
+
   function toggle(name: keyof typeof outputs) {
     const newOutputs = { ...outputs, [name]: !outputs[name] };
     setGithubForm({ ...githubForm, outputs: newOutputs });
@@ -22,6 +25,10 @@ export default function GithubScreen() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (loading) return;
+    setLoading(true);
+
     const newForm: IFormGithub = {
       outputs,
       githubToken,
@@ -52,6 +59,15 @@ export default function GithubScreen() {
       '*',
     );
   }
+
+  useEffect(() => {
+    window.onmessage = (event) => {
+      if (!event.data.pluginMessage) return;
+      if (event.data.pluginMessage.type === 'commitDone') {
+        setLoading(false);
+      }
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-x-hidden">
@@ -208,9 +224,10 @@ export default function GithubScreen() {
         />
         <button
           type="submit"
-          className="flex cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#dce8f3] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em]"
+          disabled={loading}
+          className="flex cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#dce8f3] text-[#101518] text-sm font-bold leading-normal tracking-[0.015em] disabled:opacity-50"
         >
-          Commit
+          {loading ? <span className="truncate">Committing...</span> : 'Commit'}
         </button>
       </form>
     </div>
