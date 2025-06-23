@@ -1,4 +1,4 @@
-import { TabsProps } from '../../../shared/types/typings';
+import { TabsProps } from '../../shared/types/typings';
 
 export default function Tabs(props: TabsProps) {
   const base = 'just flex flex-1 flex-col items-center justify-end gap-1';

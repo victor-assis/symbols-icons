@@ -47,6 +47,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
     new Set(['s-ultralight', 's-regular', 's-black']),
   );
   const [githubForm, setGithubForm] = useState<IFormGithub>(defaultGithubForm);
+  const [alertMessage, setAlertMessage] = useState('');
 
   return (
     <GlobalContext.Provider
@@ -69,6 +70,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setGithubForm,
         exampleFiles,
         setExampleFiles,
+        alertMessage,
+        setAlertMessage,
       }}
     >
       {children}

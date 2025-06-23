@@ -36,6 +36,7 @@ export default function IconsScreen() {
     setExampleFiles,
     setFilesName,
     setGithubForm,
+    setAlertMessage,
   } = useStore();
   const [nodes, setNodes] = useState<SceneNode[]>([]);
   const [loading, setLoading] = useState(false);
@@ -214,7 +215,7 @@ export default function IconsScreen() {
       '*',
     );
     setLoading(false);
-    alert('Files exported!');
+    setAlertMessage('Files exported!');
   }
 
   return (
