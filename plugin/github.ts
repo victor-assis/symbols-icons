@@ -232,8 +232,6 @@ export const commitToGithub = async (
         base: mainBranch,
       }),
     });
-
-    console.log('Arquivo comitado e PR aberta com sucesso.');
   } catch (error) {
     console.error('Erro ao comitar arquivo e abrir PR:', error);
   }

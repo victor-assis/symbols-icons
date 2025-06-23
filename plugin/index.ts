@@ -78,6 +78,7 @@ figma.ui.onmessage = async (msg) => {
         ...msg.github,
         svgs: await getSerializedSelection(nodes),
       });
+      figma.ui.postMessage({ type: 'commitDone' });
     },
   };
 

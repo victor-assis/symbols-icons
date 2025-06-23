@@ -66,6 +66,8 @@ export interface Store {
   setGithubForm: React.Dispatch<React.SetStateAction<IFormGithub>>;
   exampleFiles: ExampleFile[];
   setExampleFiles: React.Dispatch<React.SetStateAction<ExampleFile[]>>;
+  alertMessage: string;
+  setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export type Tab = 'icons' | 'config' | 'github';

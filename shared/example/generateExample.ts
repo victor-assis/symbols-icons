@@ -43,6 +43,10 @@ export function generateExample(
           <option value="64">64px</option>
         </select>
       </div>
+      <div class="search">
+        <label for="search">Search:</label>
+        <input id="search" placeholder="search" />
+      </div>
     </div>
   </header>
   <div class="container">
@@ -54,11 +58,11 @@ export function generateExample(
 </body>
 </html>`;
 
-  const css = `:root{--icon-size:32px}body{font-family:system-ui,sans-serif;margin:0;background:#f9fafb;color:#1f2937;height:100vh;display:flex;flex-direction:column}header{display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;margin-bottom:1rem;padding:20px;background:#f1f1f1}footer{margin-top:auto;padding:20px;background:#f1f1f1}b{font-weight:600}.container{padding:20px}.controls{display:flex;gap:1rem;align-items:center}#icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;padding:0}#icons.list{grid-template-columns:1fr}#icons li{list-style:none;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 1px 2px rgba(0,0,0,.05)}#icons span{max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}#icons li>*:last-child{margin-top:auto}.icon{width:var(--icon-size);height:var(--icon-size)}.copy-btn{padding:2px 6px;font-size:12px;border:none;border-radius:4px;background:#e5e7eb;cursor:pointer}.copy-btn:active{background:#d1d5db}`;
-  const names = json.map((i) => ({ name: i.name }));
+  const css = `:root{--icon-size:32px}body{font-family:system-ui,sans-serif;margin:0;background:#f9fafb;color:#1f2937;height:100vh;display:flex;flex-direction:column}header{display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;margin-bottom:1rem;padding:20px;background:#f1f1f1}footer{margin-top:auto;padding:20px;background:#f1f1f1}b{font-weight:600}.container{padding:20px}.controls{display:flex;gap:1rem;align-items:center}.search input{padding:2px 6px;border:1px solid #e5e7eb;border-radius:4px}.tags{font-size:12px;color:#6b7280}#icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;padding:0}#icons.list{grid-template-columns:1fr}#icons li{list-style:none;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 1px 2px rgba(0,0,0,.05)}#icons span{max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}#icons li>*:last-child{margin-top:auto}.icon{width:var(--icon-size);height:var(--icon-size)}.copy-btn{padding:2px 6px;font-size:12px;border:none;border-radius:4px;background:#e5e7eb;cursor:pointer}.copy-btn:active{background:#d1d5db}`;
+  const data = json.map((i) => ({ name: i.name, tags: i.tags ?? [] }));
   const js = `/* eslint-env browser */\n/* global document */\nconst icons=${JSON.stringify(
-    names,
-  )};\nfunction load(){const list=document.getElementById('icons');list.innerHTML='';icons.forEach(icon=>{const li=document.createElement('li');li.innerHTML='<svg class="icon"><use href="#'+icon.name+'"></use></svg><span>'+icon.name+'</span><button class="copy-btn" data-name="'+icon.name+'">Copy</button>';li.querySelector("button").addEventListener("click",e=>{const n=e.currentTarget.getAttribute("data-name");navigator.clipboard.writeText(n);e.currentTarget.textContent="Copied!";setTimeout(()=>{e.currentTarget.textContent="Copy"},1e3)});list.appendChild(li);});}document.getElementById('format').addEventListener('change',e=>{document.getElementById('icons').className=e.target.value});document.getElementById('size').addEventListener('change',e=>{document.documentElement.style.setProperty('--icon-size',e.target.value+'px')});document.getElementById('icons').className='grid';load();`;
+    data,
+  )};\nfunction load(f=''){const list=document.getElementById('icons');list.innerHTML='';icons.filter(icon=>icon.name.toLowerCase().includes(f)||icon.tags.some(t=>t.toLowerCase().includes(f))).forEach(icon=>{const li=document.createElement('li');li.innerHTML='<svg class="icon"><use href="#'+icon.name+'"></use></svg><span>'+icon.name+'</span><span class="tags">'+icon.tags.join(', ')+'</span><button class="copy-btn" data-name="'+icon.name+'">Copy</button>';li.querySelector("button").addEventListener("click",e=>{const n=e.currentTarget.getAttribute("data-name");navigator.clipboard.writeText(n);e.currentTarget.textContent="Copied!";setTimeout(()=>{e.currentTarget.textContent="Copy"},1e3)});list.appendChild(li);});}document.getElementById('format').addEventListener('change',e=>{document.getElementById('icons').className=e.target.value});document.getElementById('size').addEventListener('change',e=>{document.documentElement.style.setProperty('--icon-size',e.target.value+'px')});document.getElementById('search').addEventListener('input',e=>{load(e.target.value.toLowerCase())});document.getElementById('icons').className='grid';load();`;
 
   return [
     { name: 'index.html', content: html },

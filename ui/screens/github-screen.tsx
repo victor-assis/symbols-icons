@@ -11,6 +11,7 @@ export default function GithubScreen() {
     jsonFile,
     exampleFiles,
     filesName,
+    setAlertMessage,
   } = useStore();
   const { outputs } = githubForm;
   const {
@@ -82,6 +83,7 @@ export default function GithubScreen() {
       if (!event.data.pluginMessage) return;
       if (event.data.pluginMessage.type === 'commitDone') {
         setLoading(false);
+        setAlertMessage('Commit done!');
       }
     };
   }, []);
