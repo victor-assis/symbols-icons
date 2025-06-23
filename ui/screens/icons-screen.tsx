@@ -39,6 +39,19 @@ export default function IconsScreen() {
   } = useStore();
   const [nodes, setNodes] = useState<SceneNode[]>([]);
   const [loading, setLoading] = useState(false);
+  function handleTagChange(index: number, value: string) {
+    const tags = value
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t.length);
+    const updated = [...jsonFile];
+    updated[index] = { ...updated[index], tags };
+    setJsonFile(updated);
+    parent.postMessage(
+      { pluginMessage: { type: 'setTags', id: updated[index].id, tags } },
+      '*',
+    );
+  }
 
   function downloadBlob(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob);
@@ -306,13 +319,24 @@ export default function IconsScreen() {
         <div className="grid grid-cols-2 gap-3">
           {jsonFile &&
             jsonFile.map((icon: IJsonType, index: number) => (
-              <div className="flex items-center gap-4 p-4 border border-gray-300 rounded-lg">
-                <svg width={sfSize} height={sfSize} key={index}>
-                  <use xlinkHref={`#${icon.name}`} />
-                </svg>
-                <div className="font-medium text-gray-800 truncate">
-                  <div>{icon.name}</div>
+              <div
+                className="flex flex-col items-start gap-2 p-4 border border-gray-300 rounded-lg"
+                key={index}
+              >
+                <div className="flex items-center gap-4 w-full">
+                  <svg width={sfSize} height={sfSize}>
+                    <use xlinkHref={`#${icon.name}`} />
+                  </svg>
+                  <div className="font-medium text-gray-800 truncate">
+                    <div>{icon.name}</div>
+                  </div>
                 </div>
+                <input
+                  className="form-input w-full rounded border border-gray-300 text-sm p-1"
+                  placeholder="tags (comma separated)"
+                  value={icon.tags?.join(', ') || ''}
+                  onChange={(e) => handleTagChange(index, e.target.value)}
+                />
               </div>
             ))}
         </div>

@@ -28,6 +28,16 @@ figma.ui.onmessage = async (msg) => {
     saveGithubData: async () => {
       await figma.clientStorage.setAsync('githubData', msg.data);
     },
+    setTags: async () => {
+      const node = figma.getNodeById(msg.id);
+      if (node) {
+        try {
+          node.setPluginData('tags', JSON.stringify(msg.tags ?? []));
+        } catch {
+          /* ignore errors */
+        }
+      }
+    },
     setSvgs: async () => {
       const nodes = figma.currentPage.selection;
       void sendSerializedSelection(nodes, 'setSvgs');
