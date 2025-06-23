@@ -28,6 +28,12 @@ export interface IFormGithub {
   commitMessage: string;
   pullRequestTitle: string;
   mainBranch: string;
+  exampleFiles: ExampleFile[];
+  svgSymbol: string;
+  sfSymbols: string[];
+  jsonFile: IJsonType[];
+  filesName: string;
+  svgs?: ISerializedSVG[];
 }
 
 export interface Outputs {
@@ -44,6 +50,8 @@ export interface Store {
   setOutputs: React.Dispatch<React.SetStateAction<Outputs>>;
   svgSymbol: string;
   setSvgSymbol: React.Dispatch<React.SetStateAction<string>>;
+  sfSymbols: string[];
+  setSFSymbols: React.Dispatch<React.SetStateAction<string[]>>;
   jsonFile: IJsonType[];
   setJsonFile: React.Dispatch<React.SetStateAction<IJsonType[]>>;
   filesName: string;
@@ -54,6 +62,8 @@ export interface Store {
   setSfVariations: React.Dispatch<React.SetStateAction<Set<string>>>;
   githubForm: IFormGithub;
   setGithubForm: React.Dispatch<React.SetStateAction<IFormGithub>>;
+  exampleFiles: ExampleFile[];
+  setExampleFiles: React.Dispatch<React.SetStateAction<ExampleFile[]>>;
 }
 
 export type Tab = 'icons' | 'config' | 'github';
@@ -61,4 +71,9 @@ export type Tab = 'icons' | 'config' | 'github';
 export interface TabsProps {
   current: Tab;
   onSelect: (tab: Tab) => void;
+}
+
+export interface ExampleFile {
+  name: string;
+  content: string;
 }

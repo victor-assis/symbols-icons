@@ -1,12 +1,7 @@
 /**
  * Generate the example HTML files used to preview exported icons.
  */
-import { IJsonType } from '../types/typings';
-
-export interface ExampleFile {
-  name: string;
-  content: string;
-}
+import { ExampleFile, IJsonType } from '../types/typings';
 
 /**
  * Create an example project containing HTML, CSS and JS for preview.

@@ -3,7 +3,15 @@ import { useStore } from '../store';
 import { IFormGithub } from '../../shared/types/typings';
 
 export default function GithubScreen() {
-  const { githubForm, setGithubForm } = useStore();
+  const {
+    githubForm,
+    setGithubForm,
+    svgSymbol,
+    sfSymbols,
+    jsonFile,
+    exampleFiles,
+    filesName,
+  } = useStore();
   const { outputs } = githubForm;
   const {
     githubToken,
@@ -39,12 +47,21 @@ export default function GithubScreen() {
       commitMessage,
       pullRequestTitle,
       mainBranch,
+      exampleFiles,
+      svgSymbol,
+      sfSymbols,
+      jsonFile,
+      filesName,
     };
     setGithubForm(newForm);
     parent.postMessage(
       {
         pluginMessage: {
-          github: newForm,
+          type: 'githubCommit',
+          github: {
+            ...newForm,
+            ...{ svgSymbol, sfSymbols, jsonFile, exampleFiles, filesName },
+          },
         },
       },
       '*',

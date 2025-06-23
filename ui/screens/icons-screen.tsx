@@ -23,6 +23,8 @@ export default function IconsScreen() {
     setOutputs,
     svgSymbol,
     setSvgSymbol,
+    sfSymbols,
+    setSFSymbols,
     jsonFile,
     setJsonFile,
     sfSize,
@@ -30,11 +32,12 @@ export default function IconsScreen() {
     sfVariations,
     setSfVariations,
     filesName,
+    exampleFiles,
+    setExampleFiles,
     setFilesName,
     setGithubForm,
   } = useStore();
   const [nodes, setNodes] = useState<SceneNode[]>([]);
-  const [sfSymbols, setSFSymbols] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   function downloadBlob(blob: Blob, filename: string) {
@@ -59,7 +62,6 @@ export default function IconsScreen() {
       zip.file(`${filesName}-defs.svg`, symbol);
 
       if (outputs.example) {
-        const exampleFiles = generateExample(json, symbol);
         const example = zip.folder('example');
         exampleFiles.forEach((f: { name: string; content: string }) => {
           example?.file(f.name, f.content);
@@ -74,9 +76,30 @@ export default function IconsScreen() {
     }
     if (outputs.sf) {
       const sfFolder = zip.folder('sfsymbols');
+
       sfSvgs.forEach((svg, idx) => {
         const name = json[idx]?.name ?? `icon-${idx}`;
-        sfFolder?.file(`${name}.svg`, svg);
+        const sfIconFolder = sfFolder?.folder(`${name}.symbolset`);
+        sfIconFolder?.file(`${name}.svg`, svg);
+        sfIconFolder?.file(
+          'Contents.json',
+          JSON.stringify(
+            {
+              info: {
+                author: 'xcode',
+                version: 1,
+              },
+              symbols: [
+                {
+                  filename: `${name}.svg`,
+                  idiom: 'universal',
+                },
+              ],
+            },
+            null,
+            2,
+          ),
+        );
       });
     }
     const content = await zip.generateAsync({ type: 'blob' });
@@ -123,7 +146,11 @@ export default function IconsScreen() {
         (events as Record<string, () => void>)[type]();
       }
     };
-  }, []);
+
+    if (jsonFile && svgSymbol) {
+      setExampleFiles(generateExample(jsonFile, svgSymbol));
+    }
+  }, [jsonFile, svgSymbol]);
 
   function toggle(name: keyof typeof outputs) {
     setOutputs({ ...outputs, [name]: !outputs[name] });

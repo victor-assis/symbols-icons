@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { ExampleFile } from '../shared/example/generateExample';
 import {
   IFormGithub,
   IJsonType,
@@ -25,6 +26,11 @@ const defaultGithubForm: IFormGithub = {
   commitMessage: '',
   pullRequestTitle: '',
   mainBranch: '',
+  exampleFiles: [],
+  svgSymbol: '',
+  sfSymbols: [],
+  jsonFile: [],
+  filesName: 'icons-symbol',
 };
 
 const GlobalContext = createContext<Store | null>(null);
@@ -32,7 +38,9 @@ const GlobalContext = createContext<Store | null>(null);
 export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [outputs, setOutputs] = useState<Outputs>(defaultOutputs);
   const [svgSymbol, setSvgSymbol] = useState('');
+  const [sfSymbols, setSFSymbols] = useState<string[]>([]);
   const [jsonFile, setJsonFile] = useState<IJsonType[]>([]);
+  const [exampleFiles, setExampleFiles] = useState<ExampleFile[]>([]);
   const [filesName, setFilesName] = useState('icons-symbol');
   const [sfSize, setSfSize] = useState<number>(32);
   const [sfVariations, setSfVariations] = useState<Set<string>>(
@@ -47,6 +55,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setOutputs,
         svgSymbol,
         setSvgSymbol,
+        sfSymbols,
+        setSFSymbols,
         jsonFile,
         setJsonFile,
         filesName,
@@ -57,6 +67,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setSfVariations,
         githubForm,
         setGithubForm,
+        exampleFiles,
+        setExampleFiles,
       }}
     >
       {children}
