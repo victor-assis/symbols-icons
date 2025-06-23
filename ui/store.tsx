@@ -26,6 +26,13 @@ const defaultGithubForm: IFormGithub = {
   commitMessage: '',
   pullRequestTitle: '',
   mainBranch: '',
+  overrides: {
+    svg: { path: '', owner: '', repo: '', mainBranch: '' },
+    symbol: { path: '', owner: '', repo: '', mainBranch: '' },
+    example: { path: '', owner: '', repo: '', mainBranch: '' },
+    sf: { path: '', owner: '', repo: '', mainBranch: '' },
+    json: { path: '', owner: '', repo: '', mainBranch: '' },
+  },
   exampleFiles: [],
   svgSymbol: '',
   sfSymbols: [],

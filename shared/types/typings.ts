@@ -13,6 +13,13 @@ export interface ISerializedSVG {
   tags?: string[];
 }
 
+export interface OutputGithubConfig {
+  path: string;
+  owner: string;
+  repo: string;
+  mainBranch: string;
+}
+
 export interface IFormGithub {
   outputs: {
     svg: boolean;
@@ -30,6 +37,13 @@ export interface IFormGithub {
   commitMessage: string;
   pullRequestTitle: string;
   mainBranch: string;
+  overrides: {
+    svg: OutputGithubConfig;
+    symbol: OutputGithubConfig;
+    example: OutputGithubConfig;
+    sf: OutputGithubConfig;
+    json: OutputGithubConfig;
+  };
   exampleFiles: ExampleFile[];
   svgSymbol: string;
   sfSymbols: string[];
