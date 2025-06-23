@@ -214,6 +214,7 @@ export default function IconsScreen() {
       '*',
     );
     setLoading(false);
+    alert('Files exported!');
   }
 
   return (

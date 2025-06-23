@@ -82,6 +82,7 @@ export default function GithubScreen() {
       if (!event.data.pluginMessage) return;
       if (event.data.pluginMessage.type === 'commitDone') {
         setLoading(false);
+        alert('Commit done!');
       }
     };
   }, []);
