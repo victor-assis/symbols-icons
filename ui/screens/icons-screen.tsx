@@ -39,7 +39,11 @@ export default function IconsScreen() {
   } = useStore();
   const [nodes, setNodes] = useState<SceneNode[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tagInputs, setTagInputs] = useState<string[]>([]);
   function handleTagChange(index: number, value: string) {
+    const inputs = [...tagInputs];
+    inputs[index] = value;
+    setTagInputs(inputs);
     const tags = value
       .split(',')
       .map((t) => t.trim())
@@ -139,7 +143,12 @@ export default function IconsScreen() {
               generateSFSymbol(template, files, sfVariations, sfSize),
             );
             setSvgSymbol(generateSvgSymbol(files));
-            setJsonFile(generateJsonFile(files));
+            const json = generateJsonFile(files);
+            setJsonFile(json);
+            setTagInputs(json.map((icon) => icon.tags?.join(', ') ?? ''));
+            files.forEach((f: { id: string }) => {
+              parent.postMessage({ pluginMessage: { type: 'getTags', id: f.id } }, '*');
+            });
           }
         },
         fontConfig: () => {
@@ -152,6 +161,18 @@ export default function IconsScreen() {
         },
         githubData: () => {
           if (data) setGithubForm(data);
+        },
+        tags: () => {
+          const { id, tags } = event.data.pluginMessage;
+          const updatedJson = jsonFile.map((icon) =>
+            icon.id === id ? { ...icon, tags } : icon,
+          );
+          setJsonFile(updatedJson);
+          const inputs = [...tagInputs];
+          updatedJson.forEach((icon, idx) => {
+            if (icon.id === id) inputs[idx] = tags.join(', ');
+          });
+          setTagInputs(inputs);
         },
       };
 
@@ -334,7 +355,7 @@ export default function IconsScreen() {
                 <input
                   className="form-input w-full rounded border border-gray-300 text-sm p-1"
                   placeholder="tags (comma separated)"
-                  value={icon.tags?.join(', ') || ''}
+                  value={tagInputs[index] ?? icon.tags?.join(', ') ?? ''}
                   onChange={(e) => handleTagChange(index, e.target.value)}
                 />
               </div>
