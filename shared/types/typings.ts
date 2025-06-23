@@ -3,12 +3,14 @@ export interface IJsonType {
   svg: string;
   name: string;
   figmaName: string;
+  tags?: string[];
 }
 
 export interface ISerializedSVG {
   name: string;
   id: string;
   svg: string;
+  tags?: string[];
 }
 
 export interface IFormGithub {

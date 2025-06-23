@@ -28,6 +28,28 @@ figma.ui.onmessage = async (msg) => {
     saveGithubData: async () => {
       await figma.clientStorage.setAsync('githubData', msg.data);
     },
+    getTags: async () => {
+      const node = figma.getNodeById(msg.id);
+      if (node) {
+        try {
+          const data = node.getPluginData('tags');
+          const tags = data ? JSON.parse(data) : [];
+          figma.ui.postMessage({ type: 'tags', id: msg.id, tags });
+        } catch {
+          figma.ui.postMessage({ type: 'tags', id: msg.id, tags: [] });
+        }
+      }
+    },
+    setTags: async () => {
+      const node = figma.getNodeById(msg.id);
+      if (node) {
+        try {
+          node.setPluginData('tags', JSON.stringify(msg.tags ?? []));
+        } catch {
+          /* ignore errors */
+        }
+      }
+    },
     setSvgs: async () => {
       const nodes = figma.currentPage.selection;
       void sendSerializedSelection(nodes, 'setSvgs');

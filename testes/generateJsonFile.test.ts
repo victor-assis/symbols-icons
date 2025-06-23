@@ -15,12 +15,14 @@ describe('generateJsonFile', () => {
         svg: '<svg></svg>',
         name: 'icon-one',
         figmaName: 'Icon One',
+        tags: [],
       },
       {
         id: '2',
         svg: '<svg></svg>',
         name: 'another-icon',
         figmaName: 'Another Icon',
+        tags: [],
       },
     ]);
   });

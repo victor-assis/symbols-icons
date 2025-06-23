@@ -5,7 +5,13 @@ import {
 } from '../shared/example/generateExample';
 
 const json = [
-  { id: '1', svg: '<svg></svg>', name: 'icon-one', figmaName: 'Icon One' },
+  {
+    id: '1',
+    svg: '<svg></svg>',
+    name: 'icon-one',
+    figmaName: 'Icon One',
+    tags: [],
+  },
 ];
 const sprite = '<svg><symbol id="icon-one"></symbol></svg>';
 
