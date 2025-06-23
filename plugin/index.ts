@@ -2,6 +2,7 @@
  * Entry point for the Symbols Icons Figma plugin.
  * Handles communication between the UI and the Figma API.
  */
+import { Base64 } from 'js-base64';
 import { getSerializedSelection } from './serialize';
 import template from '../shared/sfSymbol/template.svg';
 import { IFormGithub, IJsonType } from '../shared/types/typings';
@@ -9,6 +10,10 @@ import { generateExample } from '../shared/example/generateExample';
 import { generateSFSymbol } from '../shared/sfSymbol/convertSFSymbol';
 import { generateJsonFile } from '../shared/jsonFile/convertJsonFile';
 import { generateSvgSymbol } from '../shared/svgSymbol/convertSvgSymbol';
+
+function encodeBase64(data: string): string {
+  return Base64.encode(data);
+}
 
 const DEFAULT_VARIATIONS = new Set(['s-ultralight', 's-regular', 's-black']);
 
@@ -123,6 +128,25 @@ const commitToGithub = async (form: IFormGithub): Promise<void> => {
     'Content-Type': 'application/json',
   };
 
+  if (branch && mainBranch && branch !== mainBranch) {
+    const refUrl = `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`;
+    const refRes = await fetch(refUrl, { headers });
+    if (refRes.status === 404) {
+      const mainRefRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${mainBranch}`,
+        { headers },
+      );
+      if (mainRefRes.ok) {
+        const mainRef = await mainRefRes.json();
+        await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: mainRef.object.sha }),
+        });
+      }
+    }
+  }
+
   const selection = figma.currentPage.selection;
   const svgs = await getSerializedSelection(selection);
 
@@ -177,39 +201,93 @@ const commitToGithub = async (form: IFormGithub): Promise<void> => {
     });
   }
 
-  for (const file of files) {
-    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`;
-    let sha: string | undefined;
-    const getRes = await fetch(`${url}?ref=${branch}`, { headers });
-    if (getRes.ok) {
-      const data = await getRes.json();
-      sha = data.sha;
-    }
+  const refRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`,
+    { headers },
+  );
+  const refData = await refRes.json();
+  const baseCommit = refData.object.sha;
 
-    const body = {
-      message: commitMessage,
-      content: Buffer.from(file.content, 'utf8').toString('base64'),
-      branch,
-      sha,
-    };
+  const commitRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/commits/${baseCommit}`,
+    { headers },
+  );
+  const commitData = await commitRes.json();
 
-    await fetch(url, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(body),
-    });
-  }
+  const treeItems = await Promise.all(
+    files.map(async (file) => {
+      const blobRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/git/blobs`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            content: encodeBase64(file.content),
+            encoding: 'base64',
+          }),
+        },
+      );
+      const blob = await blobRes.json();
+      return {
+        path: file.path,
+        mode: '100644',
+        type: 'blob',
+        sha: blob.sha,
+      };
+    }),
+  );
 
-  if (pullRequestTitle && mainBranch && branch !== mainBranch) {
-    await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
+  const treeRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/trees`,
+    {
       method: 'POST',
       headers,
       body: JSON.stringify({
-        title: pullRequestTitle,
-        head: branch,
-        base: mainBranch,
+        base_tree: commitData.tree.sha,
+        tree: treeItems,
       }),
+    },
+  );
+  const tree = await treeRes.json();
+
+  const newCommitRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/commits`,
+    {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        message: commitMessage,
+        parents: [baseCommit],
+        tree: tree.sha,
+      }),
+    },
+  );
+  const newCommit = await newCommitRes.json();
+
+  await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`,
+    {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ sha: newCommit.sha }),
     });
+
+  if (pullRequestTitle && mainBranch && branch !== mainBranch) {
+    const checkPr = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/pulls?head=${owner}:${branch}&base=${mainBranch}&state=open`,
+      { headers },
+    );
+    const existing = (await checkPr.json()) as unknown[];
+    if (!Array.isArray(existing) || existing.length === 0) {
+      await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          title: pullRequestTitle,
+          head: branch,
+          base: mainBranch,
+        }),
+      });
+    }
   }
 
   figma.ui.postMessage({ type: 'commitDone' });
