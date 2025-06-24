@@ -191,80 +191,81 @@ export const commitToGithub = async (
   } = githubData;
 
   try {
-    const groups: Record<string, CommitGroup> = {};
+    const groups: CommitGroup[] = [];
 
-    function addFile(
+    function addGroup(
       key: keyof typeof overrides,
-      relativePath: string,
-      content: string,
+      files: { path: string; content: string }[],
     ) {
       const cfg = overrides[key];
-      const o = cfg.owner || owner;
-      const r = cfg.repo || repo;
-      const p = cfg.path || filePath;
-      const m = cfg.mainBranch || mainBranch;
-      const groupKey = `${o}|${r}|${p}|${m}`;
-      if (!groups[groupKey]) {
-        groups[groupKey] = {
-          githubToken,
-          owner: o,
-          repo: r,
-          branch,
-          commitMessage,
-          pullRequestTitle,
-          mainBranch: m,
-          files: [],
-        };
-      }
-      groups[groupKey].files.push({ path: `${p}/${relativePath}`, content });
+      groups.push({
+        githubToken,
+        owner: cfg.owner || owner,
+        repo: cfg.repo || repo,
+        branch,
+        commitMessage,
+        pullRequestTitle,
+        mainBranch: cfg.mainBranch || mainBranch,
+        files: files.map((f) => ({
+          path: `${cfg.path || filePath}/${f.path}`,
+          content: f.content,
+        })),
+      });
     }
 
     if (outputs.json) {
-      addFile('json', `${filesName}.json`, JSON.stringify(jsonFile, null, 2));
+      addGroup('json', [
+        { path: `${filesName}.json`, content: JSON.stringify(jsonFile, null, 2) },
+      ]);
     }
 
     if (outputs.symbol) {
-      addFile('symbol', `${filesName}-defs.svg`, svgSymbol);
+      addGroup('symbol', [
+        { path: `${filesName}-defs.svg`, content: svgSymbol },
+      ]);
     }
 
     if (outputs.svg && svgs) {
-      svgs.forEach((icon) => {
-        addFile('svg', `svgs/${icon.name}.svg`, icon.svg);
-      });
+      addGroup(
+        'svg',
+        svgs.map((icon) => ({ path: `svgs/${icon.name}.svg`, content: icon.svg })),
+      );
     }
 
     if (outputs.sf && svgs) {
-      sfSymbols.forEach((symbol, idx) => {
-        addFile(
-          'sf',
-          `${svgs[idx].name}/${svgs[idx].name}.svg`,
-          symbol,
-        );
-        addFile(
-          'sf',
-          `${svgs[idx].name}/Contents.json`,
-          JSON.stringify(
-            {
-              info: { author: 'xcode', version: 1 },
-              symbols: [
-                { filename: `${svgs[idx].name}.svg`, idiom: 'universal' },
-              ],
-            },
-            null,
-            2,
-          ),
-        );
-      });
+      addGroup(
+        'sf',
+        sfSymbols.flatMap((symbol, idx) => [
+          { path: `${svgs[idx].name}/${svgs[idx].name}.svg`, content: symbol },
+          {
+            path: `${svgs[idx].name}/Contents.json`,
+            content: JSON.stringify(
+              {
+                info: { author: 'xcode', version: 1 },
+                symbols: [
+                  { filename: `${svgs[idx].name}.svg`, idiom: 'universal' },
+                ],
+              },
+              null,
+              2,
+            ),
+          },
+        ]),
+      );
     }
 
     if (outputs.example) {
-      exampleFiles.forEach((f: { name: string; content: string }) => {
-        addFile('example', f.name, f.content);
-      });
+      addGroup(
+        'example',
+        exampleFiles.map((f: { name: string; content: string }) => ({
+          path: f.name,
+          content: f.content,
+        })),
+      );
     }
 
-    for (const key of Object.keys(groups)) {
-      await commitGroup(groups[key]);
+    for (const group of groups) {
+      await commitGroup(group);
     }
   } catch (error) {
     console.error('Erro ao comitar arquivo e abrir PR:', error);
