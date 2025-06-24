@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icon Preview</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Icon Preview</h1>
+    <p class="intro">To use SVG icons in HTML, you can either embed the SVG code directly into your HTML (inline SVG) or use the &lt;use&gt; element to reference SVG symbols stored elsewhere. Inline SVG offers the most flexibility for styling and customization with CSS, while the &lt;use&gt; element with &lt;symbol&gt; provides a way to reuse SVG icons efficiently.</p>
+    <div class="controls">
+      <div class="format">
+        <label for="format">View as:</label>
+        <select id="format">
+          <option value="grid">Grid</option>
+          <option value="list">List</option>
+        </select>
+      </div>
+      <div class="size">
+        <label for="size">Size:</label>
+        <select id="size">
+          <option value="16">16px</option>
+          <option value="32" selected>32px</option>
+          <option value="48">48px</option>
+          <option value="64">64px</option>
+        </select>
+      </div>
+      <div class="search">
+        <label for="search">Search:</label>
+        <input id="search" placeholder="search" />
+      </div>
+    </div>
+  </header>
+  <div class="container">
+  <div id="symbols" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="0" height="0" style="display:none;"><symbol viewBox="0 0 33 28" id="vector">
+<path d="M32.1694 14.5303C32.1694 21.5996 26.4386 27.3303 19.3694 27.3303C12.3001 27.3303 6.56936 21.5996 6.56936 14.5303H7.99601C7.99601 20.8116 13.088 25.9037 19.3694 25.9037C25.6507 25.9037 30.7427 20.8117 30.7427 14.5303C30.7427 8.24901 25.6507 3.15697 19.3694 3.15697V1.73032C26.4386 1.73032 32.1694 7.46107 32.1694 14.5303ZM19.3694 10.2636C17.013 10.2636 15.1027 12.1739 15.1027 14.5303C15.1027 16.8867 17.013 18.7969 19.3694 18.7969C21.7258 18.7969 23.636 16.8867 23.636 14.5303C23.636 12.1739 21.7258 10.2636 19.3694 10.2636ZM16.7027 10.2636L15.9027 1.37029L12.6227 3.93029L10.676 2.01029C9.59089 1.06782 8.16404 0.493412 6.60308 0.493412C5.32995 0.493412 4.14604 0.875507 3.15983 1.53129L3.18273 1.51698L0.489388 3.25032C0.29792 3.38166 0.17392 3.59932 0.17392 3.84591C0.17392 3.99126 0.216982 4.12657 0.291076 4.23973L0.289388 4.23698C0.420732 4.42844 0.638388 4.55245 0.884982 4.55245C1.03033 4.55245 1.16564 4.50938 1.27879 4.43529L1.27604 4.43698L3.9427 2.69032C4.69211 2.19304 5.61248 1.89688 6.60201 1.89688C7.76642 1.89688 8.83504 2.30695 9.67136 2.99051L9.66267 2.98363L11.4893 4.82363L8.43598 7.25029L16.7027 10.2636Z" fill="black"/>
+</symbol><symbol viewBox="0 0 33 33" id="about-dot-me">
+<g clip-path="url(#clip0_85_422)">
+<path d="M26.2173 13.117C24.3867 13.117 23.3733 14.469 23.1587 15.9384H29.3027C29.136 14.5384 28.1467 13.1184 26.2173 13.1184V13.117ZM23.204 17.941C23.5173 19.4824 24.7947 20.5677 26.58 20.5677C27.5467 20.5677 28.94 20.2077 29.7587 19.349L31.3253 21.149C29.9067 22.629 27.788 23.0504 26.3387 23.0504C22.8187 23.0504 20.076 20.509 20.076 16.909C20.076 13.529 22.6013 10.749 26.1693 10.749C29.616 10.749 32.1693 13.389 32.1693 16.8877V17.909H23.2053L23.204 17.941ZM14.5547 23.0477V15.461C14.5547 14.1597 13.9747 13.413 12.7707 13.413C11.6853 13.413 10.964 14.193 10.4813 14.7557V23.0757H7.348V15.4757C7.348 14.1743 6.79466 13.433 5.59066 13.433C4.50666 13.433 3.75731 14.2144 3.30131 14.7744V23.0944H0.169312V10.9277H3.30266V12.461C3.836 11.8424 5.03866 10.781 6.916 10.781C8.57866 10.781 9.71066 11.481 10.2187 12.901C10.9173 11.885 12.2187 10.781 14.0987 10.781C16.3653 10.781 17.6853 12.1277 17.6853 14.7304V23.0504H14.548L14.5547 23.0477Z" fill="black"/>
+</g>
+<defs>
+<clipPath id="clip0_85_422">
+<rect width="32" height="32" fill="white" transform="translate(0.169342 0.916992)"/>
+</clipPath>
+</defs>
+</symbol><symbol viewBox="0 0 33 33" id="abstract">
+<g clip-path="url(#clip0_85_431)">
+<path d="M16.1693 0.916992C28.9707 0.916992 32.1693 4.11565 32.1693 16.917C32.1693 29.7183 28.9707 32.917 16.1693 32.917C3.36797 32.917 0.169312 29.7183 0.169312 16.917C0.169312 4.11565 3.36797 0.916992 16.1693 0.916992ZM13.544 25.669C16.9093 25.673 19.6826 22.909 19.6893 19.5423C19.6893 16.181 16.924 13.4157 13.5627 13.4157C10.2013 13.4157 7.436 16.1823 7.436 19.5423C7.436 22.897 10.1893 25.6597 13.544 25.669H13.544ZM24.6693 25.417V8.41699H7.66931V11.413H21.6667V25.417H24.6693ZM13.544 16.4196C15.2687 16.4204 16.6666 17.8188 16.6666 19.5436C16.6666 21.269 15.268 22.6676 13.5426 22.6676C13.5422 22.6676 13.5417 22.6676 13.5412 22.6676H13.5413C11.8165 22.6669 10.4186 21.2685 10.4186 19.5436C10.4186 17.8183 11.8173 16.4196 13.5426 16.4196C13.5431 16.4196 13.5436 16.4196 13.544 16.4196H13.544Z" fill="black"/>
+</g>
+<defs>
+<clipPath id="clip0_85_431">
+<rect width="32" height="32" fill="white" transform="translate(0.169312 0.916992)"/>
+</clipPath>
+</defs>
+</symbol></svg></div>
+  <ul id="icons" class="grid"></ul>
+  </div>
+  <footer>Generated by <b>Cross Icon Svg</b> on <b>Figma</b></footer>
+  <script src="script.js"></script>
+</body>
+</html>
