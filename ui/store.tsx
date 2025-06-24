@@ -7,7 +7,7 @@ import {
   Store,
 } from '../shared/types/typings';
 
-const defaultOutputs: Outputs = {
+export const defaultOutputs: Outputs = {
   svg: true,
   symbol: true,
   example: true,
@@ -16,7 +16,7 @@ const defaultOutputs: Outputs = {
   json: true,
 };
 
-const defaultGithubForm: IFormGithub = {
+export const defaultGithubForm: IFormGithub = {
   outputs: { ...defaultOutputs },
   githubToken: '',
   owner: '',
@@ -26,6 +26,13 @@ const defaultGithubForm: IFormGithub = {
   commitMessage: '',
   pullRequestTitle: '',
   mainBranch: '',
+  overrides: {
+    svg: { path: '', owner: '', repo: '', mainBranch: '' },
+    symbol: { path: '', owner: '', repo: '', mainBranch: '' },
+    example: { path: '', owner: '', repo: '', mainBranch: '' },
+    sf: { path: '', owner: '', repo: '', mainBranch: '' },
+    json: { path: '', owner: '', repo: '', mainBranch: '' },
+  },
   exampleFiles: [],
   svgSymbol: '',
   sfSymbols: [],

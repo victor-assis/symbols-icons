@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import { Base64 } from 'js-base64';
 import { useEffect, useState } from 'react';
-import { useStore } from '../store';
+import { useStore, defaultGithubForm } from '../store';
 import { IJsonType } from '../../shared/types/typings';
 import templateUrl from '../../shared/sfSymbol/template.svg';
 import { generateExample } from '../../shared/example/generateExample';
@@ -161,7 +161,12 @@ export default function IconsScreen() {
           if (data.filesName) setFilesName(data.filesName);
         },
         githubData: () => {
-          if (data) setGithubForm(data);
+          if (data)
+            setGithubForm({
+              ...defaultGithubForm,
+              ...data,
+              overrides: data.overrides ?? defaultGithubForm.overrides,
+            });
         },
         tags: () => {
           const { id, tags } = event.data.pluginMessage;

@@ -23,13 +23,41 @@ export default function GithubScreen() {
     commitMessage,
     pullRequestTitle,
     mainBranch,
+    overrides,
   } = githubForm;
 
+  const outputLabels: Record<keyof typeof overrides, string> = {
+    svg: 'SVG',
+    symbol: 'Symbol',
+    example: 'Example',
+    sf: 'SF Symbol',
+    json: 'JSON',
+  };
+
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+
+  function toggleAccordion(name: keyof typeof outputs) {
+    setOpen((prev) => ({ ...prev, [name]: !prev[name] }));
+  }
 
   function toggle(name: keyof typeof outputs) {
     const newOutputs = { ...outputs, [name]: !outputs[name] };
     setGithubForm({ ...githubForm, outputs: newOutputs });
+  }
+
+  function updateOverride(
+    output: keyof typeof overrides,
+    field: keyof typeof overrides.svg,
+    value: string,
+  ) {
+    setGithubForm({
+      ...githubForm,
+      overrides: {
+        ...overrides,
+        [output]: { ...overrides[output], [field]: value },
+      },
+    });
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -48,6 +76,7 @@ export default function GithubScreen() {
       commitMessage,
       pullRequestTitle,
       mainBranch,
+      overrides,
       exampleFiles,
       svgSymbol,
       sfSymbols,
@@ -96,75 +125,61 @@ export default function GithubScreen() {
         </h2>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-4 py-4">
-        <div className="grid grid-cols-2 gap-4">
-          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
-            <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
-              name="outputType"
-              type="checkbox"
-              value="svg"
-              checked={outputs.svg}
-              onChange={() => toggle('svg')}
-            />
-            <span className="ml-3 text-gray-700 font-medium">SVG</span>
-          </label>
-          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
-            <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
-              name="outputType"
-              type="checkbox"
-              value="symbol"
-              checked={outputs.symbol}
-              onChange={() => toggle('symbol')}
-            />
-            <span className="ml-3 text-gray-700 font-medium">Symbol</span>
-          </label>
-          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
-            <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
-              name="outputType"
-              type="checkbox"
-              value="sf"
-              checked={outputs.sf}
-              onChange={() => toggle('sf')}
-            />
-            <span className="ml-3 text-gray-700 font-medium">SF Symbol</span>
-          </label>
-          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
-            <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
-              name="outputType"
-              type="checkbox"
-              value="json"
-              checked={outputs.json}
-              onChange={() => toggle('json')}
-            />
-            <span className="ml-3 text-gray-700 font-medium">JSON</span>
-          </label>
-          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
-            <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
-              name="outputType"
-              type="checkbox"
-              value="example"
-              checked={outputs.example}
-              onChange={() => toggle('example')}
-            />
-            <span className="ml-3 text-gray-700 font-medium">Example</span>
-          </label>
-          <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-not-allowed flex-1 bg-gray-100 shadow-sm opacity-50 select-none">
+        <div className="flex flex-col gap-3">
+          {Object.keys(outputLabels).map((key) => {
+            const k = key as keyof typeof overrides;
+            const label = outputLabels[k];
+            return (
+              <details key={k} open={open[k]} className="border rounded-lg bg-white shadow-sm">
+                <summary className="flex items-center justify-between p-4 cursor-pointer" onClick={() => toggleAccordion(k)}>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
+                      type="checkbox"
+                      checked={outputs[k as keyof typeof outputs]}
+                      onChange={() => toggle(k as keyof typeof outputs)}
+                    />
+                    <span className="ml-3 text-gray-700 font-medium">{label}</span>
+                  </label>
+                </summary>
+                <div className="flex flex-col gap-2 p-4 border-t">
+                  <input
+                    value={overrides[k].path}
+                    onChange={(e) => updateOverride(k, 'path', e.target.value)}
+                    placeholder="Path"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                  />
+                  <input
+                    value={overrides[k].owner}
+                    onChange={(e) => updateOverride(k, 'owner', e.target.value)}
+                    placeholder="Owner"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                  />
+                  <input
+                    value={overrides[k].repo}
+                    onChange={(e) => updateOverride(k, 'repo', e.target.value)}
+                    placeholder="Repo"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                  />
+                  <input
+                    value={overrides[k].mainBranch}
+                    onChange={(e) => updateOverride(k, 'mainBranch', e.target.value)}
+                    placeholder="Main Branch"
+                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                  />
+                </div>
+              </details>
+            );
+          })}
+          <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-not-allowed bg-gray-100 shadow-sm opacity-50 select-none">
             <input
               className="form-radio h-5 w-5 text-teal-600 border-gray-400"
-              name="outputType"
               type="checkbox"
               value="kotlin"
-              // checked={outputs.kt}
               onChange={() => toggle('kt')}
               disabled
             />
-            <span className="ml-3 text-gray-400 font-medium">
-              kotlin - coming soon
-            </span>
+            <span className="ml-3 text-gray-400 font-medium">kotlin - coming soon</span>
           </label>
         </div>
         <input
