@@ -11,6 +11,7 @@ export default function GithubScreen() {
     jsonFile,
     exampleFiles,
     filesName,
+    kotlinPackage,
     setAlertMessage,
   } = useStore();
   const { outputs } = githubForm;
@@ -84,6 +85,7 @@ export default function GithubScreen() {
       sfSymbols,
       jsonFile,
       filesName,
+      kotlinPackage,
     };
     setGithubForm(newForm);
     parent.postMessage(
@@ -157,6 +159,7 @@ export default function GithubScreen() {
             pullRequestTitle,
             mainBranch,
             overrides,
+            kotlinPackage,
           },
         },
       },
@@ -173,6 +176,7 @@ export default function GithubScreen() {
     pullRequestTitle,
     mainBranch,
     overrides,
+    kotlinPackage,
   ]);
 
   return (
@@ -188,8 +192,15 @@ export default function GithubScreen() {
             const k = key as keyof typeof overrides;
             const label = outputLabels[k];
             return (
-              <details key={k} open={open[k]} className="border rounded-lg bg-white shadow-sm">
-                <summary className="flex items-center justify-between p-4 cursor-pointer" onClick={() => toggleAccordion(k)}>
+              <details
+                key={k}
+                open={open[k]}
+                className="border rounded-lg bg-white shadow-sm"
+              >
+                <summary
+                  className="flex items-center justify-between p-4 cursor-pointer"
+                  onClick={() => toggleAccordion(k)}
+                >
                   <label className="flex items-center cursor-pointer">
                     <input
                       className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
@@ -197,7 +208,9 @@ export default function GithubScreen() {
                       checked={outputs[k as keyof typeof outputs]}
                       onChange={() => toggle(k as keyof typeof outputs)}
                     />
-                    <span className="ml-3 text-gray-700 font-medium">{label}</span>
+                    <span className="ml-3 text-gray-700 font-medium">
+                      {label}
+                    </span>
                   </label>
                 </summary>
                 <div className="flex flex-col gap-2 p-4 border-t">
@@ -221,7 +234,9 @@ export default function GithubScreen() {
                   />
                   <input
                     value={overrides[k].mainBranch}
-                    onChange={(e) => updateOverride(k, 'mainBranch', e.target.value)}
+                    onChange={(e) =>
+                      updateOverride(k, 'mainBranch', e.target.value)
+                    }
                     placeholder="Main Branch"
                     className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
                   />

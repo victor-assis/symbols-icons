@@ -33,6 +33,7 @@ const serialize = async (node: SceneNode): Promise<ISerializedSVG> => {
     name: node.name,
     id: node.id,
     svg: fixedSvg,
+    originalSvg: svg,
     tags: (() => {
       try {
         const data = node.getPluginData('tags');
