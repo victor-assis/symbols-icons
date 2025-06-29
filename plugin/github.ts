@@ -1,4 +1,5 @@
 import { IFormGithub } from '../shared/types/typings';
+import { generateComposeFile } from '../shared/kotlin/svgToCompose';
 
 interface CommitGroup {
   githubToken: string;
@@ -230,6 +231,11 @@ export const commitToGithub = async (
         'svg',
         svgs.map((icon) => ({ path: `svgs/${icon.name}.svg`, content: icon.svg })),
       );
+    }
+
+    if (outputs.kt && svgs) {
+      const kotlin = generateComposeFile(svgs);
+      addGroup('kt', [{ path: `${filesName}.kt`, content: kotlin.content }]);
     }
 
     if (outputs.sf && svgs) {

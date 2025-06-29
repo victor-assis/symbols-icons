@@ -42,6 +42,7 @@ export interface IFormGithub {
     symbol: OutputGithubConfig;
     example: OutputGithubConfig;
     sf: OutputGithubConfig;
+    kt: OutputGithubConfig;
     json: OutputGithubConfig;
   };
   exampleFiles: ExampleFile[];

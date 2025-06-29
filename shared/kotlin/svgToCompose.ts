@@ -1,4 +1,6 @@
 import { load } from 'cheerio';
+import { ISerializedSVG } from '../types/typings';
+import { slugify } from '../utils/slugify';
 
 export function parsePathData(d: string): string {
   return d
@@ -53,5 +55,37 @@ export function svgToCompose(svg: string, name = 'MyIcon'): string {
             ${parsePathData(path)}
     }
 }.build()`;
+}
+
+function toPascalCase(name: string): string {
+  return slugify(name)
+    .split('-')
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+    .join('');
+}
+
+export function generateComposeFile(
+  icons: ISerializedSVG[],
+  objectName = 'Icons',
+  packageName = 'com.example.icons',
+): { name: string; content: string } {
+  const defs = icons
+    .map((icon) => svgToCompose(icon.svg, toPascalCase(icon.name)))
+    .join('\n\n    ');
+
+  const content = `package ${packageName}
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.unit.dp
+
+object ${objectName} {
+    ${defs.replace(/\n/g, '\n    ')}
+}`;
+
+  return { name: `${objectName}.kt`, content };
 }
 
