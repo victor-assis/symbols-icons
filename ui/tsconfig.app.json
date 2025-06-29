@@ -9,11 +9,12 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "module": "ESNext",
-    "skipLibCheck": true,
+      "module": "ESNext",
+      "skipLibCheck": true,
+      "allowSyntheticDefaultImports": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+      "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
