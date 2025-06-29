@@ -5,6 +5,8 @@
 import { commitToGithub } from './github';
 import { getSerializedSelection } from './serialize';
 
+let useVectorChildren = true;
+
 figma.showUI(__html__, { width: 490, height: 840 });
 
 figma.ui.onmessage = async (msg) => {
@@ -16,10 +18,17 @@ figma.ui.onmessage = async (msg) => {
     },
     getSymbolConfig: async () => {
       const data = await figma.clientStorage.getAsync('symbolConfig');
+      if (data && typeof data.useVectorChildren === 'boolean') {
+        useVectorChildren = data.useVectorChildren;
+      }
       figma.ui.postMessage({ type: 'symbolConfig', data });
     },
     saveSymbolConfig: async () => {
       await figma.clientStorage.setAsync('symbolConfig', msg.data);
+      if (typeof msg.data.useVectorChildren === 'boolean') {
+        useVectorChildren = msg.data.useVectorChildren;
+      }
+      sendSelectedNode();
     },
     getGithubData: async () => {
       const data = await figma.clientStorage.getAsync('githubData');
@@ -51,29 +60,11 @@ figma.ui.onmessage = async (msg) => {
       }
     },
     setSvgs: async () => {
-      const nodes = figma.currentPage.selection;
+      const nodes = expandSelection(figma.currentPage.selection);
       void sendSerializedSelection(nodes, 'setSvgs');
     },
     githubCommit: async () => {
-      const nodes = figma.currentPage.selection
-        .map((node) => {
-          try {
-            let vector: SceneNode[] = [];
-            if (
-              node.type === 'FRAME' ||
-              node.type === 'COMPONENT' ||
-              node.type === 'INSTANCE'
-            ) {
-              vector = (
-                node as FrameNode | ComponentNode | InstanceNode
-              ).findChildren((child: SceneNode) => child.type === 'VECTOR');
-            }
-            return vector.length ? vector : node;
-          } catch {
-            return node;
-          }
-        })
-        .flat();
+      const nodes = expandSelection(figma.currentPage.selection);
       await commitToGithub({
         ...msg.github,
         svgs: await getSerializedSelection(nodes),
@@ -93,26 +84,7 @@ figma.on('selectionchange', () => sendSelectedNode());
  * Sends the currently selected nodes to the UI.
  */
 const sendSelectedNode = () => {
-  const nodes = figma.currentPage.selection
-    .map((node) => {
-      try {
-        let vector: SceneNode[] = [];
-        if (
-          node.type === 'FRAME' ||
-          node.type === 'COMPONENT' ||
-          node.type === 'INSTANCE'
-        ) {
-          vector = (
-            node as FrameNode | ComponentNode | InstanceNode
-          ).findChildren((child: SceneNode) => child.type === 'VECTOR');
-        }
-        return vector.length ? vector : node;
-      } catch {
-        return node;
-      }
-    })
-    .flat();
-
+  const nodes = expandSelection(figma.currentPage.selection);
   void sendSerializedSelection(nodes, 'setSvgs');
 
   figma.ui.postMessage({
@@ -135,3 +107,25 @@ const sendSerializedSelection = async (
     files: svgs,
   });
 };
+
+const expandSelection = (selection: readonly SceneNode[]): SceneNode[] =>
+  selection
+    .map((node) => {
+      try {
+        if (
+          useVectorChildren &&
+          (node.type === 'FRAME' ||
+            node.type === 'COMPONENT' ||
+            node.type === 'INSTANCE')
+        ) {
+          const vector = (
+            node as FrameNode | ComponentNode | InstanceNode
+          ).findChildren((child: SceneNode) => child.type === 'VECTOR');
+          return vector.length ? vector : node;
+        }
+        return node;
+      } catch {
+        return node;
+      }
+    })
+    .flat();

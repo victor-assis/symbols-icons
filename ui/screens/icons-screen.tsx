@@ -1,9 +1,11 @@
 import JSZip from 'jszip';
 import { Base64 } from 'js-base64';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useStore, defaultGithubForm } from '../store';
 import { IJsonType } from '../../shared/types/typings';
 import templateUrl from '../../shared/sfSymbol/template.svg';
+import { convertFillRule } from '../../shared/utils/convertFillRule';
+import { generateComposeFile } from '../../shared/kotlin/svgToCompose';
 import { generateExample } from '../../shared/example/generateExample';
 import { generateSFSymbol } from '../../shared/sfSymbol/convertSFSymbol';
 import { generateJsonFile } from '../../shared/jsonFile/convertJsonFile';
@@ -35,12 +37,18 @@ export default function IconsScreen() {
     exampleFiles,
     setExampleFiles,
     setFilesName,
+    useVectorChildren,
+    setUseVectorChildren,
     setGithubForm,
     setAlertMessage,
   } = useStore();
   const [nodes, setNodes] = useState<SceneNode[]>([]);
   const [loading, setLoading] = useState(false);
   const [tagInputs, setTagInputs] = useState<string[]>([]);
+  const jsonFileRef = useRef(jsonFile);
+  useEffect(() => {
+    jsonFileRef.current = jsonFile;
+  }, [jsonFile]);
   function handleTagChange(index: number, value: string) {
     const inputs = [...tagInputs];
     inputs[index] = value;
@@ -67,6 +75,31 @@ export default function IconsScreen() {
     URL.revokeObjectURL(url);
   }
 
+  function revertFillRule(index: number) {
+    setJsonFile((prev) => {
+      const updated = [...prev];
+      const icon = updated[index];
+      if (icon.originalSvg) {
+        const isReverted = icon.svg === icon.originalSvg;
+        const newSvg = isReverted
+          ? (convertFillRule(icon.originalSvg) as string)
+          : icon.originalSvg;
+        updated[index] = { ...icon, svg: newSvg };
+        const updatedFiles = updated.map((i) => ({
+          name: i.figmaName,
+          id: i.id,
+          svg: i.svg,
+          tags: i.tags,
+        }));
+        setSvgSymbol(generateSvgSymbol(updatedFiles));
+        setSFSymbols(
+          generateSFSymbol(template, updatedFiles, sfVariations, sfSize),
+        );
+      }
+      return updated;
+    });
+  }
+
   async function downloadOutputs(
     json: IJsonType[],
     symbol: string,
@@ -74,7 +107,9 @@ export default function IconsScreen() {
   ) {
     const zip = new JSZip();
     if (outputs.json) {
-      zip.file(`${filesName}.json`, JSON.stringify(json, null, 2));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const jsonForFile = json.map(({ originalSvg, ...rest }) => rest);
+      zip.file(`${filesName}.json`, JSON.stringify(jsonForFile, null, 2));
     }
     if (outputs.symbol) {
       zip.file(`${filesName}-defs.svg`, symbol);
@@ -120,6 +155,13 @@ export default function IconsScreen() {
         );
       });
     }
+    if (outputs.kt) {
+      const ktFolder = zip.folder('kotlin');
+      const kotlinFiles = generateComposeFile(json);
+      kotlinFiles.forEach((f) => {
+        ktFolder?.file(f.name, f.content);
+      });
+    }
     const content = await zip.generateAsync({ type: 'blob' });
     downloadBlob(content, `${filesName}.zip`);
   }
@@ -140,33 +182,69 @@ export default function IconsScreen() {
         },
         setSvgs: async () => {
           if (files.length) {
-            setSFSymbols(
-              generateSFSymbol(template, files, sfVariations, sfSize),
-            );
-            setSvgSymbol(generateSvgSymbol(files));
+            const previous = jsonFileRef.current;
             const json = generateJsonFile(files);
-            setJsonFile(json);
-            setTagInputs(json.map((icon) => icon.tags?.join(', ') ?? ''));
-            files.forEach((f: { id: string }) => {
-              parent.postMessage({ pluginMessage: { type: 'getTags', id: f.id } }, '*');
+            const updated = json.map((icon) => {
+              const prevIcon = previous.find((p) => p.id === icon.id);
+              const isReverted = prevIcon && prevIcon.svg === prevIcon.originalSvg;
+              return isReverted ? { ...icon, svg: icon.originalSvg } : icon;
+            });
+            const updatedFiles = files.map((file) => {
+              const icon = updated.find((i) => i.id === file.id);
+              return { ...file, svg: icon?.svg ?? file.svg, tags: icon?.tags ?? file.tags };
+            });
+            setSFSymbols(
+              generateSFSymbol(template, updatedFiles, sfVariations, sfSize),
+            );
+            setSvgSymbol(generateSvgSymbol(updatedFiles));
+            setJsonFile(updated);
+            setTagInputs(updated.map((icon) => icon.tags?.join(', ') ?? ''));
+            updatedFiles.forEach((f: { id: string }) => {
+              parent.postMessage(
+                { pluginMessage: { type: 'getTags', id: f.id } },
+                '*',
+              );
             });
           }
         },
-        fontConfig: () => {
+        symbolConfig: () => {
           if (!data) return;
           if (data.outputs) setOutputs(data.outputs);
           if (typeof data.sfSize === 'number') setSfSize(data.sfSize);
-          if (data.sfVariations)
-            setSfVariations(new Set<string>(data.sfVariations));
+          if (data.sfVariations) {
+            const oldDefaults = ['s-ultralight', 's-regular', 's-black'];
+            let variations = data.sfVariations as string[];
+            const isOldDefault =
+              variations.length === oldDefaults.length &&
+              oldDefaults.every((v) => variations.includes(v));
+            if (isOldDefault) {
+              variations = ['m-ultralight', 'm-regular', 'm-black'];
+            }
+            setSfVariations(new Set<string>(variations));
+          }
           if (data.filesName) setFilesName(data.filesName);
+          if (typeof data.useVectorChildren === 'boolean')
+            setUseVectorChildren(data.useVectorChildren);
         },
         githubData: () => {
-          if (data)
-            setGithubForm({
-              ...defaultGithubForm,
-              ...data,
-              overrides: data.overrides ?? defaultGithubForm.overrides,
-            });
+          if (!data) return;
+          const mergedOverrides = Object.fromEntries(
+            Object.entries(defaultGithubForm.overrides).map(([key, cfg]) => [
+              key,
+              {
+                ...cfg,
+                ...(data.overrides?.[
+                  key as keyof typeof defaultGithubForm.overrides
+                ] ?? {}),
+              },
+            ]),
+          ) as typeof defaultGithubForm.overrides;
+
+          setGithubForm({
+            ...defaultGithubForm,
+            ...data,
+            overrides: mergedOverrides,
+          });
         },
         tags: () => {
           const { id, tags } = event.data.pluginMessage;
@@ -186,11 +264,31 @@ export default function IconsScreen() {
         (events as Record<string, () => void>)[type]();
       }
     };
+  }, []);
 
+  useEffect(() => {
     if (jsonFile && svgSymbol) {
       setExampleFiles(generateExample(jsonFile, svgSymbol));
     }
   }, [jsonFile, svgSymbol]);
+
+  useEffect(() => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'saveSymbolConfig',
+          data: {
+            outputs,
+            sfSize,
+            sfVariations: Array.from(sfVariations),
+            filesName,
+            useVectorChildren,
+          },
+        },
+      },
+      '*',
+    );
+  }, [outputs, sfSize, sfVariations, filesName, useVectorChildren]);
 
   function toggle(name: keyof typeof outputs) {
     setOutputs({ ...outputs, [name]: !outputs[name] });
@@ -214,6 +312,7 @@ export default function IconsScreen() {
             sfSize,
             sfVariations: Array.from(sfVariations),
             filesName,
+            useVectorChildren,
           },
         },
       },
@@ -289,21 +388,28 @@ export default function IconsScreen() {
             />
             <span className="ml-3 text-gray-700 font-medium">Example</span>
           </label>
-          <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-not-allowed flex-1 bg-gray-100 shadow-sm opacity-50 select-none">
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
             <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400"
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
               name="outputType"
               type="checkbox"
               value="kotlin"
               checked={outputs.kt}
               onChange={() => toggle('kt')}
-              disabled
             />
-            <span className="ml-3 text-gray-400 font-medium">
-              kotlin - coming soon
-            </span>
+            <span className="ml-3 text-gray-700 font-medium">Kotlin</span>
           </label>
         </div>
+
+        <label className="flex items-center gap-2 py-2">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-teal-600 border-gray-400"
+            checked={useVectorChildren}
+            onChange={() => setUseVectorChildren(!useVectorChildren)}
+          />
+          <span className="text-gray-700 font-medium">Use vector children</span>
+        </label>
 
         <div className="flex py-3">
           <button
@@ -336,7 +442,9 @@ export default function IconsScreen() {
             >
               <div className="ms-3 text-sm font-medium">{`selected ${
                 nodes.length
-              } vector${nodes.length > 1 ? 's' : ''}`}</div>
+              } ${useVectorChildren ? 'vector' : 'item'}${
+                nodes.length > 1 ? 's' : ''
+              }`}</div>
             </div>
           </>
         )}
@@ -365,6 +473,17 @@ export default function IconsScreen() {
                   value={tagInputs[index] ?? icon.tags?.join(', ') ?? ''}
                   onChange={(e) => handleTagChange(index, e.target.value)}
                 />
+                {icon.originalSvg && (
+                  <button
+                    type="button"
+                    className="text-[#007bff] text-xs hover:underline"
+                    onClick={() => revertFillRule(index)}
+                  >
+                    {icon.svg === icon.originalSvg
+                      ? 'Apply fill-rule'
+                      : 'Revert fill-rule'}
+                  </button>
+                )}
               </div>
             ))}
         </div>
