@@ -107,7 +107,7 @@ export default function ConfigScreen() {
           </table>
         </div>
         <p className="text-[#5c748a] text-sm">
-          Only the small sizes are required: Ultralight, Regular, Black.
+          Only the medium sizes are required: Ultralight, Regular, Black.
           However, you can generate other sizes, this will increase the weight
           of the file.
         </p>

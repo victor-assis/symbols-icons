@@ -42,6 +42,7 @@ export interface IFormGithub {
     symbol: OutputGithubConfig;
     example: OutputGithubConfig;
     sf: OutputGithubConfig;
+    kt: OutputGithubConfig;
     json: OutputGithubConfig;
   };
   exampleFiles: ExampleFile[];
@@ -82,6 +83,8 @@ export interface Store {
   setExampleFiles: React.Dispatch<React.SetStateAction<ExampleFile[]>>;
   alertMessage: string;
   setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
+  useVectorChildren: boolean;
+  setUseVectorChildren: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type Tab = 'icons' | 'config' | 'github';
