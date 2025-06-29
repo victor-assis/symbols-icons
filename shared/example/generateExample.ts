@@ -68,7 +68,15 @@ export function generateExample(
     { name: 'index.html', content: html },
     { name: 'style.css', content: css },
     { name: 'script.js', content: js },
-    { name: 'icons.json', content: JSON.stringify(json, null, 2) },
+    {
+      name: 'icons.json',
+      content: JSON.stringify(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        json.map(({ originalSvg, ...rest }) => rest),
+        null,
+        2,
+      ),
+    },
     { name: 'icons-symbol.svg', content: symbol },
   ];
 }

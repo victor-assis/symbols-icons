@@ -143,7 +143,10 @@ async function commitGroup({
   );
 
   if (updateBranch.status !== 200) {
-    console.error('Erro ao criar o arquivo:', (await createTree.json()).message);
+    console.error(
+      'Erro ao criar o arquivo:',
+      (await createTree.json()).message,
+    );
     return;
   }
 
@@ -187,6 +190,7 @@ export const commitToGithub = async (
     sfSymbols,
     jsonFile,
     filesName,
+    kotlinPackage,
     svgs,
     overrides,
   } = githubData;
@@ -220,7 +224,15 @@ export const commitToGithub = async (
 
     if (outputs.json) {
       addGroup('json', [
-        { path: `${filesName}.json`, content: JSON.stringify(jsonFile, null, 2) },
+        {
+          path: `${filesName}.json`,
+          content: JSON.stringify(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            jsonFile.map(({ originalSvg, ...rest }) => rest),
+            null,
+            2,
+          ),
+        },
       ]);
     }
 
@@ -233,15 +245,21 @@ export const commitToGithub = async (
     if (outputs.svg && svgs) {
       addGroup(
         'svg',
-        svgs.map((icon) => ({ path: `svgs/${icon.name}.svg`, content: icon.svg })),
+        svgs.map((icon) => ({
+          path: `svgs/${icon.name}.svg`,
+          content: icon.svg,
+        })),
       );
     }
 
     if (outputs.kt && svgs) {
-      const kotlinFiles = generateComposeFile(svgs);
+      const kotlinFiles = generateComposeFile(svgs, kotlinPackage);
       addGroup(
         'kt',
-        kotlinFiles.map((f) => ({ path: `kotlin/${f.name}`, content: f.content })),
+        kotlinFiles.map((f) => ({
+          path: `kotlin/${f.name}`,
+          content: f.content,
+        })),
       );
     }
 
