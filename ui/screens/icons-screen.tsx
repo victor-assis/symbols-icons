@@ -5,6 +5,7 @@ import { useStore, defaultGithubForm } from '../store';
 import { IJsonType } from '../../shared/types/typings';
 import templateUrl from '../../shared/sfSymbol/template.svg';
 import { generateExample } from '../../shared/example/generateExample';
+import { generateComposeFile } from '../../shared/kotlin/svgToCompose';
 import { generateSFSymbol } from '../../shared/sfSymbol/convertSFSymbol';
 import { generateJsonFile } from '../../shared/jsonFile/convertJsonFile';
 import { generateSvgSymbol } from '../../shared/svgSymbol/convertSvgSymbol';
@@ -35,6 +36,8 @@ export default function IconsScreen() {
     exampleFiles,
     setExampleFiles,
     setFilesName,
+    useVectorChildren,
+    setUseVectorChildren,
     setGithubForm,
     setAlertMessage,
   } = useStore();
@@ -120,6 +123,13 @@ export default function IconsScreen() {
         );
       });
     }
+    if (outputs.kt) {
+      const ktFolder = zip.folder('kotlin');
+      const kotlinFiles = generateComposeFile(json);
+      kotlinFiles.forEach((f) => {
+        ktFolder?.file(f.name, f.content);
+      });
+    }
     const content = await zip.generateAsync({ type: 'blob' });
     downloadBlob(content, `${filesName}.zip`);
   }
@@ -148,25 +158,51 @@ export default function IconsScreen() {
             setJsonFile(json);
             setTagInputs(json.map((icon) => icon.tags?.join(', ') ?? ''));
             files.forEach((f: { id: string }) => {
-              parent.postMessage({ pluginMessage: { type: 'getTags', id: f.id } }, '*');
+              parent.postMessage(
+                { pluginMessage: { type: 'getTags', id: f.id } },
+                '*',
+              );
             });
           }
         },
-        fontConfig: () => {
+        symbolConfig: () => {
           if (!data) return;
           if (data.outputs) setOutputs(data.outputs);
           if (typeof data.sfSize === 'number') setSfSize(data.sfSize);
-          if (data.sfVariations)
-            setSfVariations(new Set<string>(data.sfVariations));
+          if (data.sfVariations) {
+            const oldDefaults = ['s-ultralight', 's-regular', 's-black'];
+            let variations = data.sfVariations as string[];
+            const isOldDefault =
+              variations.length === oldDefaults.length &&
+              oldDefaults.every((v) => variations.includes(v));
+            if (isOldDefault) {
+              variations = ['m-ultralight', 'm-regular', 'm-black'];
+            }
+            setSfVariations(new Set<string>(variations));
+          }
           if (data.filesName) setFilesName(data.filesName);
+          if (typeof data.useVectorChildren === 'boolean')
+            setUseVectorChildren(data.useVectorChildren);
         },
         githubData: () => {
-          if (data)
-            setGithubForm({
-              ...defaultGithubForm,
-              ...data,
-              overrides: data.overrides ?? defaultGithubForm.overrides,
-            });
+          if (!data) return;
+          const mergedOverrides = Object.fromEntries(
+            Object.entries(defaultGithubForm.overrides).map(([key, cfg]) => [
+              key,
+              {
+                ...cfg,
+                ...(data.overrides?.[
+                  key as keyof typeof defaultGithubForm.overrides
+                ] ?? {}),
+              },
+            ]),
+          ) as typeof defaultGithubForm.overrides;
+
+          setGithubForm({
+            ...defaultGithubForm,
+            ...data,
+            overrides: mergedOverrides,
+          });
         },
         tags: () => {
           const { id, tags } = event.data.pluginMessage;
@@ -186,11 +222,31 @@ export default function IconsScreen() {
         (events as Record<string, () => void>)[type]();
       }
     };
+  }, []);
 
+  useEffect(() => {
     if (jsonFile && svgSymbol) {
       setExampleFiles(generateExample(jsonFile, svgSymbol));
     }
   }, [jsonFile, svgSymbol]);
+
+  useEffect(() => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'saveSymbolConfig',
+          data: {
+            outputs,
+            sfSize,
+            sfVariations: Array.from(sfVariations),
+            filesName,
+            useVectorChildren,
+          },
+        },
+      },
+      '*',
+    );
+  }, [outputs, sfSize, sfVariations, filesName, useVectorChildren]);
 
   function toggle(name: keyof typeof outputs) {
     setOutputs({ ...outputs, [name]: !outputs[name] });
@@ -214,6 +270,7 @@ export default function IconsScreen() {
             sfSize,
             sfVariations: Array.from(sfVariations),
             filesName,
+            useVectorChildren,
           },
         },
       },
@@ -289,21 +346,28 @@ export default function IconsScreen() {
             />
             <span className="ml-3 text-gray-700 font-medium">Example</span>
           </label>
-          <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-not-allowed flex-1 bg-gray-100 shadow-sm opacity-50 select-none">
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
             <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400"
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
               name="outputType"
               type="checkbox"
               value="kotlin"
               checked={outputs.kt}
               onChange={() => toggle('kt')}
-              disabled
             />
-            <span className="ml-3 text-gray-400 font-medium">
-              kotlin - coming soon
-            </span>
+            <span className="ml-3 text-gray-700 font-medium">Kotlin</span>
           </label>
         </div>
+
+        <label className="flex items-center gap-2 py-2">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-teal-600 border-gray-400"
+            checked={useVectorChildren}
+            onChange={() => setUseVectorChildren(!useVectorChildren)}
+          />
+          <span className="text-gray-700 font-medium">Use vector children</span>
+        </label>
 
         <div className="flex py-3">
           <button
@@ -336,7 +400,9 @@ export default function IconsScreen() {
             >
               <div className="ms-3 text-sm font-medium">{`selected ${
                 nodes.length
-              } vector${nodes.length > 1 ? 's' : ''}`}</div>
+              } ${useVectorChildren ? 'vector' : 'item'}${
+                nodes.length > 1 ? 's' : ''
+              }`}</div>
             </div>
           </>
         )}
