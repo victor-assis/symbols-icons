@@ -31,6 +31,7 @@ export default function GithubScreen() {
     symbol: 'Symbol',
     example: 'Example',
     sf: 'SF Symbol',
+    kt: 'Kotlin',
     json: 'JSON',
   };
 
@@ -171,16 +172,6 @@ export default function GithubScreen() {
               </details>
             );
           })}
-          <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-not-allowed bg-gray-100 shadow-sm opacity-50 select-none">
-            <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400"
-              type="checkbox"
-              value="kotlin"
-              onChange={() => toggle('kt')}
-              disabled
-            />
-            <span className="ml-3 text-gray-400 font-medium">kotlin - coming soon</span>
-          </label>
         </div>
         <input
           value={githubToken}

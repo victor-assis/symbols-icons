@@ -8,6 +8,7 @@ import { generateExample } from '../../shared/example/generateExample';
 import { generateSFSymbol } from '../../shared/sfSymbol/convertSFSymbol';
 import { generateJsonFile } from '../../shared/jsonFile/convertJsonFile';
 import { generateSvgSymbol } from '../../shared/svgSymbol/convertSvgSymbol';
+import { generateComposeFile } from '../../shared/kotlin/svgToCompose';
 
 function bytesToString(bytes: Uint8Array): string {
   return Base64.decode(Base64.fromUint8Array(bytes));
@@ -119,6 +120,10 @@ export default function IconsScreen() {
           ),
         );
       });
+    }
+    if (outputs.kt) {
+      const kotlin = generateComposeFile(json);
+      zip.file(kotlin.name, kotlin.content);
     }
     const content = await zip.generateAsync({ type: 'blob' });
     downloadBlob(content, `${filesName}.zip`);
@@ -289,19 +294,16 @@ export default function IconsScreen() {
             />
             <span className="ml-3 text-gray-700 font-medium">Example</span>
           </label>
-          <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-not-allowed flex-1 bg-gray-100 shadow-sm opacity-50 select-none">
+          <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer flex-1 bg-white shadow-sm hover:shadow-md transition-shadow">
             <input
-              className="form-radio h-5 w-5 text-teal-600 border-gray-400"
+              className="form-radio h-5 w-5 text-teal-600 border-gray-400 focus:ring-teal-500"
               name="outputType"
               type="checkbox"
               value="kotlin"
               checked={outputs.kt}
               onChange={() => toggle('kt')}
-              disabled
             />
-            <span className="ml-3 text-gray-400 font-medium">
-              kotlin - coming soon
-            </span>
+            <span className="ml-3 text-gray-700 font-medium">Kotlin</span>
           </label>
         </div>
 

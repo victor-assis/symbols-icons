@@ -31,6 +31,7 @@ export const defaultGithubForm: IFormGithub = {
     symbol: { path: '', owner: '', repo: '', mainBranch: '' },
     example: { path: '', owner: '', repo: '', mainBranch: '' },
     sf: { path: '', owner: '', repo: '', mainBranch: '' },
+    kt: { path: '', owner: '', repo: '', mainBranch: '' },
     json: { path: '', owner: '', repo: '', mainBranch: '' },
   },
   exampleFiles: [],
