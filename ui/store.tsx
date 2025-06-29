@@ -31,6 +31,7 @@ export const defaultGithubForm: IFormGithub = {
     symbol: { path: '', owner: '', repo: '', mainBranch: '' },
     example: { path: '', owner: '', repo: '', mainBranch: '' },
     sf: { path: '', owner: '', repo: '', mainBranch: '' },
+    kt: { path: '', owner: '', repo: '', mainBranch: '' },
     json: { path: '', owner: '', repo: '', mainBranch: '' },
   },
   exampleFiles: [],
@@ -38,6 +39,7 @@ export const defaultGithubForm: IFormGithub = {
   sfSymbols: [],
   jsonFile: [],
   filesName: 'icons-symbol',
+  kotlinPackage: 'com.example.icons',
 };
 
 const GlobalContext = createContext<Store | null>(null);
@@ -49,11 +51,13 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [jsonFile, setJsonFile] = useState<IJsonType[]>([]);
   const [exampleFiles, setExampleFiles] = useState<ExampleFile[]>([]);
   const [filesName, setFilesName] = useState('icons-symbol');
+  const [kotlinPackage, setKotlinPackage] = useState('com.example.icons');
   const [sfSize, setSfSize] = useState<number>(32);
   const [sfVariations, setSfVariations] = useState<Set<string>>(
-    new Set(['s-ultralight', 's-regular', 's-black']),
+    new Set(['m-ultralight', 'm-regular', 'm-black']),
   );
   const [githubForm, setGithubForm] = useState<IFormGithub>(defaultGithubForm);
+  const [useVectorChildren, setUseVectorChildren] = useState<boolean>(true);
   const [alertMessage, setAlertMessage] = useState('');
 
   return (
@@ -69,10 +73,14 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setJsonFile,
         filesName,
         setFilesName,
+        kotlinPackage,
+        setKotlinPackage,
         sfSize,
         setSfSize,
         sfVariations,
         setSfVariations,
+        useVectorChildren,
+        setUseVectorChildren,
         githubForm,
         setGithubForm,
         exampleFiles,

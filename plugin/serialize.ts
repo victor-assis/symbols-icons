@@ -1,4 +1,5 @@
 import { ISerializedSVG } from '../shared/types/typings';
+import { convertFillRule } from '../shared/utils/convertFillRule';
 /**
  * Serialize a list of nodes from the current selection into SVG strings.
  *
@@ -26,10 +27,13 @@ const serialize = async (node: SceneNode): Promise<ISerializedSVG> => {
       return '';
     });
 
+  const fixedSvg = convertFillRule(svg) as string;
+
   return {
     name: node.name,
     id: node.id,
-    svg,
+    svg: fixedSvg,
+    originalSvg: svg,
     tags: (() => {
       try {
         const data = node.getPluginData('tags');

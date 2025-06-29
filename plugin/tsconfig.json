@@ -4,6 +4,7 @@
         "noEmit": true,
         "target": "es6",
         "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
         
         "typeRoots": [
             "../node_modules/@types",

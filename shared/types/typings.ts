@@ -4,6 +4,7 @@ export interface IJsonType {
   name: string;
   figmaName: string;
   tags?: string[];
+  originalSvg?: string;
 }
 
 export interface ISerializedSVG {
@@ -11,6 +12,7 @@ export interface ISerializedSVG {
   id: string;
   svg: string;
   tags?: string[];
+  originalSvg?: string;
 }
 
 export interface OutputGithubConfig {
@@ -42,6 +44,7 @@ export interface IFormGithub {
     symbol: OutputGithubConfig;
     example: OutputGithubConfig;
     sf: OutputGithubConfig;
+    kt: OutputGithubConfig;
     json: OutputGithubConfig;
   };
   exampleFiles: ExampleFile[];
@@ -49,6 +52,7 @@ export interface IFormGithub {
   sfSymbols: string[];
   jsonFile: IJsonType[];
   filesName: string;
+  kotlinPackage: string;
   svgs?: ISerializedSVG[];
 }
 
@@ -72,6 +76,8 @@ export interface Store {
   setJsonFile: React.Dispatch<React.SetStateAction<IJsonType[]>>;
   filesName: string;
   setFilesName: React.Dispatch<React.SetStateAction<string>>;
+  kotlinPackage: string;
+  setKotlinPackage: React.Dispatch<React.SetStateAction<string>>;
   sfSize: number;
   setSfSize: React.Dispatch<React.SetStateAction<number>>;
   sfVariations: Set<string>;
@@ -82,6 +88,8 @@ export interface Store {
   setExampleFiles: React.Dispatch<React.SetStateAction<ExampleFile[]>>;
   alertMessage: string;
   setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
+  useVectorChildren: boolean;
+  setUseVectorChildren: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type Tab = 'icons' | 'config' | 'github';

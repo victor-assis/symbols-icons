@@ -1,4 +1,5 @@
 import { IFormGithub } from '../shared/types/typings';
+import { generateComposeFile } from '../shared/kotlin/svgToCompose';
 
 interface CommitGroup {
   githubToken: string;
@@ -186,18 +187,23 @@ export const commitToGithub = async (
     sfSymbols,
     jsonFile,
     filesName,
+    kotlinPackage,
     svgs,
     overrides,
   } = githubData;
+
+  const mergedOverrides =
+    overrides ?? ({} as Partial<IFormGithub['overrides']>);
 
   try {
     const groups: CommitGroup[] = [];
 
     function addGroup(
-      key: keyof typeof overrides,
+      key: keyof IFormGithub['overrides'],
       files: { path: string; content: string }[],
     ) {
-      const cfg = overrides[key];
+      const cfg = mergedOverrides[key] ?? {};
+      const basePath = (cfg.path || filePath).replace(/\/$/, '');
       groups.push({
         githubToken,
         owner: cfg.owner || owner,
@@ -207,7 +213,7 @@ export const commitToGithub = async (
         pullRequestTitle,
         mainBranch: cfg.mainBranch || mainBranch,
         files: files.map((f) => ({
-          path: `${cfg.path || filePath}/${f.path}`,
+          path: `${basePath}/${f.path}`,
           content: f.content,
         })),
       });
@@ -215,7 +221,15 @@ export const commitToGithub = async (
 
     if (outputs.json) {
       addGroup('json', [
-        { path: `${filesName}.json`, content: JSON.stringify(jsonFile, null, 2) },
+        {
+          path: `${filesName}.json`,
+          content: JSON.stringify(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            jsonFile.map(({ originalSvg, ...rest }) => rest),
+            null,
+            2,
+          ),
+        },
       ]);
     }
 
@@ -229,6 +243,14 @@ export const commitToGithub = async (
       addGroup(
         'svg',
         svgs.map((icon) => ({ path: `svgs/${icon.name}.svg`, content: icon.svg })),
+      );
+    }
+
+    if (outputs.kt && svgs) {
+      const kotlinFiles = generateComposeFile(svgs, kotlinPackage);
+      addGroup(
+        'kt',
+        kotlinFiles.map((f) => ({ path: `kotlin/${f.name}`, content: f.content })),
       );
     }
 
