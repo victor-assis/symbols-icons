@@ -5,10 +5,10 @@ import { useStore, defaultGithubForm } from '../store';
 import { IJsonType } from '../../shared/types/typings';
 import templateUrl from '../../shared/sfSymbol/template.svg';
 import { generateExample } from '../../shared/example/generateExample';
+import { generateComposeFile } from '../../shared/kotlin/svgToCompose';
 import { generateSFSymbol } from '../../shared/sfSymbol/convertSFSymbol';
 import { generateJsonFile } from '../../shared/jsonFile/convertJsonFile';
 import { generateSvgSymbol } from '../../shared/svgSymbol/convertSvgSymbol';
-import { generateComposeFile } from '../../shared/kotlin/svgToCompose';
 
 function bytesToString(bytes: Uint8Array): string {
   return Base64.decode(Base64.fromUint8Array(bytes));
@@ -36,6 +36,8 @@ export default function IconsScreen() {
     exampleFiles,
     setExampleFiles,
     setFilesName,
+    useVectorChildren,
+    setUseVectorChildren,
     setGithubForm,
     setAlertMessage,
   } = useStore();
@@ -153,17 +155,22 @@ export default function IconsScreen() {
             setJsonFile(json);
             setTagInputs(json.map((icon) => icon.tags?.join(', ') ?? ''));
             files.forEach((f: { id: string }) => {
-              parent.postMessage({ pluginMessage: { type: 'getTags', id: f.id } }, '*');
+              parent.postMessage(
+                { pluginMessage: { type: 'getTags', id: f.id } },
+                '*',
+              );
             });
           }
         },
-        fontConfig: () => {
+        symbolConfig: () => {
           if (!data) return;
           if (data.outputs) setOutputs(data.outputs);
           if (typeof data.sfSize === 'number') setSfSize(data.sfSize);
           if (data.sfVariations)
             setSfVariations(new Set<string>(data.sfVariations));
           if (data.filesName) setFilesName(data.filesName);
+          if (typeof data.useVectorChildren === 'boolean')
+            setUseVectorChildren(data.useVectorChildren);
         },
         githubData: () => {
           if (data)
@@ -219,6 +226,7 @@ export default function IconsScreen() {
             sfSize,
             sfVariations: Array.from(sfVariations),
             filesName,
+            useVectorChildren,
           },
         },
       },
@@ -307,6 +315,16 @@ export default function IconsScreen() {
           </label>
         </div>
 
+        <label className="flex items-center gap-2 py-2">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-teal-600 border-gray-400"
+            checked={useVectorChildren}
+            onChange={() => setUseVectorChildren(!useVectorChildren)}
+          />
+          <span className="text-gray-700 font-medium">Use vector children</span>
+        </label>
+
         <div className="flex py-3">
           <button
             onClick={updateIcons}
@@ -338,7 +356,9 @@ export default function IconsScreen() {
             >
               <div className="ms-3 text-sm font-medium">{`selected ${
                 nodes.length
-              } vector${nodes.length > 1 ? 's' : ''}`}</div>
+              } ${useVectorChildren ? 'vector' : 'item'}${
+                nodes.length > 1 ? 's' : ''
+              }`}</div>
             </div>
           </>
         )}

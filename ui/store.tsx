@@ -55,6 +55,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
     new Set(['s-ultralight', 's-regular', 's-black']),
   );
   const [githubForm, setGithubForm] = useState<IFormGithub>(defaultGithubForm);
+  const [useVectorChildren, setUseVectorChildren] = useState<boolean>(true);
   const [alertMessage, setAlertMessage] = useState('');
 
   return (
@@ -74,6 +75,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setSfSize,
         sfVariations,
         setSfVariations,
+        useVectorChildren,
+        setUseVectorChildren,
         githubForm,
         setGithubForm,
         exampleFiles,
