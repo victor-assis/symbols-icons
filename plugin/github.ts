@@ -234,8 +234,11 @@ export const commitToGithub = async (
     }
 
     if (outputs.kt && svgs) {
-      const kotlin = generateComposeFile(svgs);
-      addGroup('kt', [{ path: `${filesName}.kt`, content: kotlin.content }]);
+      const kotlinFiles = generateComposeFile(svgs);
+      addGroup(
+        'kt',
+        kotlinFiles.map((f) => ({ path: f.name, content: f.content })),
+      );
     }
 
     if (outputs.sf && svgs) {

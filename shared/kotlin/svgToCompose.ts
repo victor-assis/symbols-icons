@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
-import { ISerializedSVG } from '../types/typings';
 import { slugify } from '../utils/slugify';
+import { ISerializedSVG } from '../types/typings';
 
 export function parsePathData(d: string): string {
   return d
@@ -11,19 +11,19 @@ export function parsePathData(d: string): string {
       const [command, ...args] = cmd.trim().split(/[\s,]+/);
       const floatArgs = args.map((n) => parseFloat(n));
       switch (command) {
-        case 'M':
-          return `moveTo(${floatArgs[0]}f, ${floatArgs[1]}f)`;
-        case 'L':
-          return `lineTo(${floatArgs[0]}f, ${floatArgs[1]}f)`;
-        case 'H':
-          return `horizontalLineTo(${floatArgs[0]}f)`;
-        case 'V':
-          return `verticalLineTo(${floatArgs[0]}f)`;
-        case 'Z':
-        case 'z':
-          return 'close()';
-        default:
-          return `/* Unsupported command: ${command} */`;
+      case 'M':
+        return `moveTo(${floatArgs[0]}f, ${floatArgs[1]}f)`;
+      case 'L':
+        return `lineTo(${floatArgs[0]}f, ${floatArgs[1]}f)`;
+      case 'H':
+        return `horizontalLineTo(${floatArgs[0]}f)`;
+      case 'V':
+        return `verticalLineTo(${floatArgs[0]}f)`;
+      case 'Z':
+      case 'z':
+        return 'close()';
+      default:
+        return `/* Unsupported command: ${command} */`;
       }
     })
     .join('\n            ');
@@ -40,7 +40,7 @@ export function svgToCompose(svg: string, name = 'MyIcon'): string {
   const vbHeight = parseFloat(vbParts[3]) || height;
 
   return `val ${name.replace(/[-\s]/g, '_')} = ImageVector.Builder(
-    name = \"${name}\",
+    name = "${name}",
     defaultWidth = ${width}.dp,
     defaultHeight = ${height}.dp,
     viewportWidth = ${vbWidth}f,
@@ -66,14 +66,12 @@ function toPascalCase(name: string): string {
 
 export function generateComposeFile(
   icons: ISerializedSVG[],
-  objectName = 'Icons',
   packageName = 'com.example.icons',
-): { name: string; content: string } {
-  const defs = icons
-    .map((icon) => svgToCompose(icon.svg, toPascalCase(icon.name)))
-    .join('\n\n    ');
-
-  const content = `package ${packageName}
+): { name: string; content: string }[] {
+  return icons.map((icon) => {
+    const name = toPascalCase(icon.name);
+    const def = svgToCompose(icon.svg, name);
+    const content = `package ${packageName}
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
@@ -82,10 +80,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-object ${objectName} {
-    ${defs.replace(/\n/g, '\n    ')}
-}`;
+${def}`;
 
-  return { name: `${objectName}.kt`, content };
+    return { name: `${name}.kt`, content };
+  });
 }
 

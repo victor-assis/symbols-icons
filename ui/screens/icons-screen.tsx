@@ -124,8 +124,10 @@ export default function IconsScreen() {
       });
     }
     if (outputs.kt) {
-      const kotlin = generateComposeFile(json);
-      zip.file(kotlin.name, kotlin.content);
+      const kotlinFiles = generateComposeFile(json);
+      kotlinFiles.forEach((f) => {
+        zip.file(f.name, f.content);
+      });
     }
     const content = await zip.generateAsync({ type: 'blob' });
     downloadBlob(content, `${filesName}.zip`);
