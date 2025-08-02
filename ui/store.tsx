@@ -52,7 +52,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [filesName, setFilesName] = useState('icons-symbol');
   const [sfSize, setSfSize] = useState<number>(32);
   const [sfVariations, setSfVariations] = useState<Set<string>>(
-    new Set(['s-ultralight', 's-regular', 's-black']),
+    new Set(['m-ultralight', 'm-regular', 'm-black']),
   );
   const [githubForm, setGithubForm] = useState<IFormGithub>(defaultGithubForm);
   const [useVectorChildren, setUseVectorChildren] = useState<boolean>(true);

@@ -169,8 +169,17 @@ export default function IconsScreen() {
           if (!data) return;
           if (data.outputs) setOutputs(data.outputs);
           if (typeof data.sfSize === 'number') setSfSize(data.sfSize);
-          if (data.sfVariations)
-            setSfVariations(new Set<string>(data.sfVariations));
+          if (data.sfVariations) {
+            const oldDefaults = ['s-ultralight', 's-regular', 's-black'];
+            let variations = data.sfVariations as string[];
+            const isOldDefault =
+              variations.length === oldDefaults.length &&
+              oldDefaults.every((v) => variations.includes(v));
+            if (isOldDefault) {
+              variations = ['m-ultralight', 'm-regular', 'm-black'];
+            }
+            setSfVariations(new Set<string>(variations));
+          }
           if (data.filesName) setFilesName(data.filesName);
           if (typeof data.useVectorChildren === 'boolean')
             setUseVectorChildren(data.useVectorChildren);
