@@ -176,12 +176,24 @@ export default function IconsScreen() {
             setUseVectorChildren(data.useVectorChildren);
         },
         githubData: () => {
-          if (data)
-            setGithubForm({
-              ...defaultGithubForm,
-              ...data,
-              overrides: data.overrides ?? defaultGithubForm.overrides,
-            });
+          if (!data) return;
+          const mergedOverrides = Object.fromEntries(
+            Object.entries(defaultGithubForm.overrides).map(([key, cfg]) => [
+              key,
+              {
+                ...cfg,
+                ...(data.overrides?.[
+                  key as keyof typeof defaultGithubForm.overrides
+                ] ?? {}),
+              },
+            ]),
+          ) as typeof defaultGithubForm.overrides;
+
+          setGithubForm({
+            ...defaultGithubForm,
+            ...data,
+            overrides: mergedOverrides,
+          });
         },
         tags: () => {
           const { id, tags } = event.data.pluginMessage;
