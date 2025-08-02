@@ -28,6 +28,7 @@ figma.ui.onmessage = async (msg) => {
       if (typeof msg.data.useVectorChildren === 'boolean') {
         useVectorChildren = msg.data.useVectorChildren;
       }
+      sendSelectedNode();
     },
     getGithubData: async () => {
       const data = await figma.clientStorage.getAsync('githubData');
