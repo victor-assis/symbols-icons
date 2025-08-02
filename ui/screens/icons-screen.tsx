@@ -200,7 +200,9 @@ export default function IconsScreen() {
         (events as Record<string, () => void>)[type]();
       }
     };
+  }, []);
 
+  useEffect(() => {
     if (jsonFile && svgSymbol) {
       setExampleFiles(generateExample(jsonFile, svgSymbol));
     }
