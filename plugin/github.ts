@@ -191,14 +191,18 @@ export const commitToGithub = async (
     overrides,
   } = githubData;
 
+  const mergedOverrides =
+    overrides ?? ({} as Partial<IFormGithub['overrides']>);
+
   try {
     const groups: CommitGroup[] = [];
 
     function addGroup(
-      key: keyof typeof overrides,
+      key: keyof IFormGithub['overrides'],
       files: { path: string; content: string }[],
     ) {
-      const cfg = overrides[key];
+      const cfg = mergedOverrides[key] ?? {};
+      const basePath = (cfg.path || filePath).replace(/\/$/, '');
       groups.push({
         githubToken,
         owner: cfg.owner || owner,
@@ -208,7 +212,7 @@ export const commitToGithub = async (
         pullRequestTitle,
         mainBranch: cfg.mainBranch || mainBranch,
         files: files.map((f) => ({
-          path: `${cfg.path || filePath}/${f.path}`,
+          path: `${basePath}/${f.path}`,
           content: f.content,
         })),
       });
