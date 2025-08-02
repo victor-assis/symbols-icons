@@ -206,6 +206,24 @@ export default function IconsScreen() {
     }
   }, [jsonFile, svgSymbol]);
 
+  useEffect(() => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'saveSymbolConfig',
+          data: {
+            outputs,
+            sfSize,
+            sfVariations: Array.from(sfVariations),
+            filesName,
+            useVectorChildren,
+          },
+        },
+      },
+      '*',
+    );
+  }, [outputs, sfSize, sfVariations, filesName, useVectorChildren]);
+
   function toggle(name: keyof typeof outputs) {
     setOutputs({ ...outputs, [name]: !outputs[name] });
   }
