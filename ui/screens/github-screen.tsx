@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useStore } from '../store';
+import { useStore, defaultGithubForm } from '../store';
 import { IFormGithub } from '../../shared/types/typings';
 
 export default function GithubScreen() {
@@ -37,6 +37,7 @@ export default function GithubScreen() {
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [showToken, setShowToken] = useState(false);
 
   function toggleAccordion(name: keyof typeof outputs) {
     setOpen((prev) => ({ ...prev, [name]: !prev[name] }));
@@ -109,14 +110,70 @@ export default function GithubScreen() {
   }
 
   useEffect(() => {
+    parent.postMessage({ pluginMessage: { type: 'getGithubData' } }, '*');
     window.onmessage = (event) => {
       if (!event.data.pluginMessage) return;
-      if (event.data.pluginMessage.type === 'commitDone') {
+      const { type, data } = event.data.pluginMessage;
+      if (type === 'commitDone') {
         setLoading(false);
         setAlertMessage('Commit done!');
       }
+      if (type === 'githubData') {
+        if (!data) return;
+        const mergedOverrides = Object.fromEntries(
+          Object.entries(defaultGithubForm.overrides).map(([key, cfg]) => [
+            key,
+            {
+              ...cfg,
+              ...(data.overrides?.[
+                key as keyof typeof defaultGithubForm.overrides
+              ] ?? {}),
+            },
+          ]),
+        ) as typeof defaultGithubForm.overrides;
+
+        setGithubForm({
+          ...defaultGithubForm,
+          ...data,
+          overrides: mergedOverrides,
+        });
+      }
     };
   }, []);
+
+  useEffect(() => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'saveGithubData',
+          data: {
+            outputs,
+            githubToken,
+            owner,
+            repo,
+            branch,
+            filePath,
+            commitMessage,
+            pullRequestTitle,
+            mainBranch,
+            overrides,
+          },
+        },
+      },
+      '*',
+    );
+  }, [
+    outputs,
+    githubToken,
+    owner,
+    repo,
+    branch,
+    filePath,
+    commitMessage,
+    pullRequestTitle,
+    mainBranch,
+    overrides,
+  ]);
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-x-hidden">
@@ -173,14 +230,24 @@ export default function GithubScreen() {
             );
           })}
         </div>
-        <input
-          value={githubToken}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, githubToken: e.target.value })
-          }
-          placeholder="Token"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
+        <div className="relative">
+          <input
+            type={showToken ? 'text' : 'password'}
+            value={githubToken}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, githubToken: e.target.value })
+            }
+            placeholder="Token"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] pr-12 text-base font-normal leading-normal"
+          />
+          <button
+            type="button"
+            onClick={() => setShowToken((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#007bff]"
+          >
+            {showToken ? 'Hide' : 'Show'}
+          </button>
+        </div>
         <p className="text-[#5c748a] text-sm">
           For more information access:{' '}
           <a
