@@ -112,7 +112,6 @@ const expandSelection = (selection: readonly SceneNode[]): SceneNode[] =>
   selection
     .map((node) => {
       try {
-        console.log(useVectorChildren);
         if (
           useVectorChildren &&
           (node.type === 'FRAME' ||
