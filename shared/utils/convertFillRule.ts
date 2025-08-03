@@ -6,17 +6,20 @@ import {
   XMLSerializer as XmldomXMLSerializer,
 } from '@xmldom/xmldom';
 
-(
-  svgpath as unknown as {
-    prototype: { reverse: () => typeof svgpath };
-  }
-).prototype.reverse = function () {
+type Segment = (string | number)[];
+
+interface SvgPathWithSegments extends ReturnType<typeof svgpath> {
+  segments: Segment[];
+  reverse(): SvgPathWithSegments;
+}
+
+(svgpath as unknown as { prototype: SvgPathWithSegments }).prototype.reverse = function (
+  this: SvgPathWithSegments,
+) {
   const rev = reversePath(this.toString());
-  this.segments = svgpath(rev).segments;
+  this.segments = (svgpath(rev) as SvgPathWithSegments).segments;
   return this;
 };
-
-type Segment = (string | number)[];
 
 interface Command {
   code: string;
@@ -83,12 +86,14 @@ function commandToSegment(cmd: Command): Segment {
  * @returns Updated SVG string or Document (same type as input).
  */
 export function convertFillRule(svg: string | Document): string | Document {
-  const Parser =
-    typeof DOMParser === 'undefined' ? XmldomDOMParser : DOMParser;
-  const doc =
+  const Parser: typeof DOMParser =
+    typeof DOMParser === 'undefined'
+      ? (XmldomDOMParser as unknown as typeof DOMParser)
+      : DOMParser;
+  const doc: Document =
     typeof svg === 'string'
       ? new Parser().parseFromString(svg, 'image/svg+xml')
-      : svg;
+      : (svg as Document);
 
   const docAny = doc as unknown as {
     querySelectorAll?: (selector: string) => NodeListOf<Element>;
@@ -123,10 +128,12 @@ export function convertFillRule(svg: string | Document): string | Document {
 
     const newD = subpaths
       .map((segments, index) => {
-        const p = svgpath('');
+        const p = svgpath('') as SvgPathWithSegments;
         p.segments = segments;
         const part = p.toString();
-        return index === 0 ? part : svgpath(part).reverse().toString();
+        return index === 0
+          ? part
+          : (svgpath(part) as SvgPathWithSegments).reverse().toString();
       })
       .join('');
 
@@ -134,9 +141,11 @@ export function convertFillRule(svg: string | Document): string | Document {
     path.setAttribute('fill-rule', 'nonzero');
   });
 
-  const Serializer =
+  const Serializer: typeof XMLSerializer =
     typeof XMLSerializer === 'undefined'
-      ? XmldomXMLSerializer
+      ? (XmldomXMLSerializer as unknown as typeof XMLSerializer)
       : XMLSerializer;
-  return typeof svg === 'string' ? new Serializer().serializeToString(doc) : doc;
+  return typeof svg === 'string'
+    ? new Serializer().serializeToString(doc)
+    : doc;
 }
