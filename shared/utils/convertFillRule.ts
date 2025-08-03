@@ -1,6 +1,10 @@
 import svgpath from 'svgpath';
 import { parseSVG } from 'svg-path-parser';
 import { reverse as reversePath } from 'svg-path-reverse';
+import {
+  DOMParser as XmldomDOMParser,
+  XMLSerializer as XmldomXMLSerializer,
+} from '@xmldom/xmldom';
 
 (
   svgpath as unknown as {
@@ -79,9 +83,11 @@ function commandToSegment(cmd: Command): Segment {
  * @returns Updated SVG string or Document (same type as input).
  */
 export function convertFillRule(svg: string | Document): string | Document {
+  const Parser =
+    typeof DOMParser === 'undefined' ? XmldomDOMParser : DOMParser;
   const doc =
     typeof svg === 'string'
-      ? new DOMParser().parseFromString(svg, 'image/svg+xml')
+      ? new Parser().parseFromString(svg, 'image/svg+xml')
       : svg;
 
   const docAny = doc as unknown as {
@@ -128,5 +134,9 @@ export function convertFillRule(svg: string | Document): string | Document {
     path.setAttribute('fill-rule', 'nonzero');
   });
 
-  return typeof svg === 'string' ? new XMLSerializer().serializeToString(doc) : doc;
+  const Serializer =
+    typeof XMLSerializer === 'undefined'
+      ? XmldomXMLSerializer
+      : XMLSerializer;
+  return typeof svg === 'string' ? new Serializer().serializeToString(doc) : doc;
 }

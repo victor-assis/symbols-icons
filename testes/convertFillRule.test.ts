@@ -1,10 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { DOMParser, XMLSerializer } from '@xmldom/xmldom';
+import { DOMParser } from '@xmldom/xmldom';
+import { describe, expect, it } from 'vitest';
 import { convertFillRule } from '../shared/utils/convertFillRule';
-
-(globalThis as unknown as { DOMParser: typeof DOMParser }).DOMParser = DOMParser;
-(globalThis as unknown as { XMLSerializer: typeof XMLSerializer }).XMLSerializer =
-  XMLSerializer;
 
 describe('convertFillRule', () => {
   const svg = '<svg xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M0 0L10 0L10 10L0 10ZM2 2L8 2L8 8L2 8Z"/></svg>';
