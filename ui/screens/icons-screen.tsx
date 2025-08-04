@@ -70,6 +70,27 @@ export default function IconsScreen() {
     URL.revokeObjectURL(url);
   }
 
+  function revertFillRule(index: number) {
+    setJsonFile((prev) => {
+      const updated = [...prev];
+      const icon = updated[index];
+      if (icon.originalSvg) {
+        updated[index] = { ...icon, svg: icon.originalSvg };
+        setSvgSymbol(
+          generateSvgSymbol(
+            updated.map((i) => ({
+              name: i.figmaName,
+              id: i.id,
+              svg: i.svg,
+              tags: i.tags,
+            })),
+          ),
+        );
+      }
+      return updated;
+    });
+  }
+
   async function downloadOutputs(
     json: IJsonType[],
     symbol: string,
@@ -77,7 +98,9 @@ export default function IconsScreen() {
   ) {
     const zip = new JSZip();
     if (outputs.json) {
-      zip.file(`${filesName}.json`, JSON.stringify(json, null, 2));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const jsonForFile = json.map(({ originalSvg, ...rest }) => rest);
+      zip.file(`${filesName}.json`, JSON.stringify(jsonForFile, null, 2));
     }
     if (outputs.symbol) {
       zip.file(`${filesName}-defs.svg`, symbol);
@@ -431,6 +454,15 @@ export default function IconsScreen() {
                   value={tagInputs[index] ?? icon.tags?.join(', ') ?? ''}
                   onChange={(e) => handleTagChange(index, e.target.value)}
                 />
+                {icon.originalSvg && icon.svg !== icon.originalSvg && (
+                  <button
+                    type="button"
+                    className="text-[#007bff] text-xs hover:underline"
+                    onClick={() => revertFillRule(index)}
+                  >
+                    Revert fill-rule
+                  </button>
+                )}
               </div>
             ))}
         </div>

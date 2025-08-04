@@ -23,6 +23,7 @@ export function generateJsonFile(files: ISerializedSVG[]) {
       name: slugify(file.name),
       figmaName: file.name,
       tags: file.tags ?? [],
+      originalSvg: file.originalSvg,
     });
   });
 

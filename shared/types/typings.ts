@@ -4,6 +4,7 @@ export interface IJsonType {
   name: string;
   figmaName: string;
   tags?: string[];
+  originalSvg?: string;
 }
 
 export interface ISerializedSVG {
@@ -11,6 +12,7 @@ export interface ISerializedSVG {
   id: string;
   svg: string;
   tags?: string[];
+  originalSvg?: string;
 }
 
 export interface OutputGithubConfig {

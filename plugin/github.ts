@@ -220,7 +220,15 @@ export const commitToGithub = async (
 
     if (outputs.json) {
       addGroup('json', [
-        { path: `${filesName}.json`, content: JSON.stringify(jsonFile, null, 2) },
+        {
+          path: `${filesName}.json`,
+          content: JSON.stringify(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            jsonFile.map(({ originalSvg, ...rest }) => rest),
+            null,
+            2,
+          ),
+        },
       ]);
     }
 
