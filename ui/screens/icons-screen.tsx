@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useStore, defaultGithubForm } from '../store';
 import { IJsonType } from '../../shared/types/typings';
 import templateUrl from '../../shared/sfSymbol/template.svg';
-import { generateExample } from '../../shared/example/generateExample';
+import { convertFillRule } from '../../shared/utils/convertFillRule';
 import { generateComposeFile } from '../../shared/kotlin/svgToCompose';
+import { generateExample } from '../../shared/example/generateExample';
 import { generateSFSymbol } from '../../shared/sfSymbol/convertSFSymbol';
 import { generateJsonFile } from '../../shared/jsonFile/convertJsonFile';
 import { generateSvgSymbol } from '../../shared/svgSymbol/convertSvgSymbol';
@@ -75,7 +76,11 @@ export default function IconsScreen() {
       const updated = [...prev];
       const icon = updated[index];
       if (icon.originalSvg) {
-        updated[index] = { ...icon, svg: icon.originalSvg };
+        const isReverted = icon.svg === icon.originalSvg;
+        const newSvg = isReverted
+          ? (convertFillRule(icon.originalSvg) as string)
+          : icon.originalSvg;
+        updated[index] = { ...icon, svg: newSvg };
         setSvgSymbol(
           generateSvgSymbol(
             updated.map((i) => ({
@@ -454,13 +459,15 @@ export default function IconsScreen() {
                   value={tagInputs[index] ?? icon.tags?.join(', ') ?? ''}
                   onChange={(e) => handleTagChange(index, e.target.value)}
                 />
-                {icon.originalSvg && icon.svg !== icon.originalSvg && (
+                {icon.originalSvg && (
                   <button
                     type="button"
                     className="text-[#007bff] text-xs hover:underline"
                     onClick={() => revertFillRule(index)}
                   >
-                    Revert fill-rule
+                    {icon.svg === icon.originalSvg
+                      ? 'Apply fill-rule'
+                      : 'Revert fill-rule'}
                   </button>
                 )}
               </div>
