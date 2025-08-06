@@ -85,15 +85,15 @@ export default function IconsScreen() {
           ? (convertFillRule(icon.originalSvg) as string)
           : icon.originalSvg;
         updated[index] = { ...icon, svg: newSvg };
-        setSvgSymbol(
-          generateSvgSymbol(
-            updated.map((i) => ({
-              name: i.figmaName,
-              id: i.id,
-              svg: i.svg,
-              tags: i.tags,
-            })),
-          ),
+        const updatedFiles = updated.map((i) => ({
+          name: i.figmaName,
+          id: i.id,
+          svg: i.svg,
+          tags: i.tags,
+        }));
+        setSvgSymbol(generateSvgSymbol(updatedFiles));
+        setSFSymbols(
+          generateSFSymbol(template, updatedFiles, sfVariations, sfSize),
         );
       }
       return updated;
