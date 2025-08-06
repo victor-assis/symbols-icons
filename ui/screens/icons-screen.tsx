@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { Base64 } from 'js-base64';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useStore, defaultGithubForm } from '../store';
 import { IJsonType } from '../../shared/types/typings';
 import templateUrl from '../../shared/sfSymbol/template.svg';
@@ -45,6 +45,10 @@ export default function IconsScreen() {
   const [nodes, setNodes] = useState<SceneNode[]>([]);
   const [loading, setLoading] = useState(false);
   const [tagInputs, setTagInputs] = useState<string[]>([]);
+  const jsonFileRef = useRef(jsonFile);
+  useEffect(() => {
+    jsonFileRef.current = jsonFile;
+  }, [jsonFile]);
   function handleTagChange(index: number, value: string) {
     const inputs = [...tagInputs];
     inputs[index] = value;
@@ -178,14 +182,24 @@ export default function IconsScreen() {
         },
         setSvgs: async () => {
           if (files.length) {
-            setSFSymbols(
-              generateSFSymbol(template, files, sfVariations, sfSize),
-            );
-            setSvgSymbol(generateSvgSymbol(files));
+            const previous = jsonFileRef.current;
             const json = generateJsonFile(files);
-            setJsonFile(json);
-            setTagInputs(json.map((icon) => icon.tags?.join(', ') ?? ''));
-            files.forEach((f: { id: string }) => {
+            const updated = json.map((icon) => {
+              const prevIcon = previous.find((p) => p.id === icon.id);
+              const isReverted = prevIcon && prevIcon.svg === prevIcon.originalSvg;
+              return isReverted ? { ...icon, svg: icon.originalSvg } : icon;
+            });
+            const updatedFiles = files.map((file) => {
+              const icon = updated.find((i) => i.id === file.id);
+              return { ...file, svg: icon?.svg ?? file.svg, tags: icon?.tags ?? file.tags };
+            });
+            setSFSymbols(
+              generateSFSymbol(template, updatedFiles, sfVariations, sfSize),
+            );
+            setSvgSymbol(generateSvgSymbol(updatedFiles));
+            setJsonFile(updated);
+            setTagInputs(updated.map((icon) => icon.tags?.join(', ') ?? ''));
+            updatedFiles.forEach((f: { id: string }) => {
               parent.postMessage(
                 { pluginMessage: { type: 'getTags', id: f.id } },
                 '*',
