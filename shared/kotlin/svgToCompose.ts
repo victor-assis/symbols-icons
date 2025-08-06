@@ -35,31 +35,57 @@ export function parsePathData(d: string): string {
     .join('\n            ');
 }
 
+function parseColor(color = '#000'): string {
+  const c = color.toLowerCase();
+  if (c === 'none') return 'Color.Transparent';
+  if (c === 'black') return 'Color.Black';
+  if (c === 'white') return 'Color.White';
+  if (c.startsWith('#')) {
+    let hex = c.slice(1);
+    if (hex.length === 3) {
+      hex = hex
+        .split('')
+        .map((h) => h + h)
+        .join('');
+    }
+    return `Color(0xFF${hex.toUpperCase()})`;
+  }
+  return 'Color.Black';
+}
+
 export function svgToCompose(svg: string, name = 'MyIcon'): string {
   const $ = load(svg);
   const svgNode = $('svg');
-  const path = $('path').attr('d') || '';
   const width = parseFloat(svgNode.attr('width') || '24');
   const height = parseFloat(svgNode.attr('height') || '24');
   const vbParts = (svgNode.attr('viewBox') || `0 0 ${width} ${height}`).split(/\s+/);
   const vbWidth = parseFloat(vbParts[2]) || width;
   const vbHeight = parseFloat(vbParts[3]) || height;
 
-  return `val ${name.replace(/[-\s]/g, '_')} = ImageVector.Builder(
+  const paths = $('path')
+    .toArray()
+    .map((p) => {
+      const d = $(p).attr('d') || '';
+      const fill = parseColor($(p).attr('fill') || '#000');
+      return `path(
+        fill = SolidColor(${fill}),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        pathFillType = PathFillType.NonZero
+    ) {
+            ${parsePathData(d)}
+    }`;
+    })
+    .join('\n    ');
+
+  return `val ${name.replace(/[-\\s]/g, '_')} = ImageVector.Builder(
     name = "${name}",
     defaultWidth = ${width}.dp,
     defaultHeight = ${height}.dp,
     viewportWidth = ${vbWidth}f,
     viewportHeight = ${vbHeight}f
 ).apply {
-    path(
-        fill = SolidColor(Color.Black),
-        stroke = null,
-        strokeLineWidth = 0.0f,
-        pathFillType = PathFillType.NonZero
-    ) {
-            ${parsePathData(path)}
-    }
+    ${paths}
 }.build()`;
 }
 
