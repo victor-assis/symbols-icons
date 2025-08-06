@@ -1,29 +1,35 @@
 import { load } from 'cheerio';
+import { parseSVG, makeAbsolute, CommandMadeAbsolute } from 'svg-path-parser';
 import { slugify } from '../utils/slugify';
 import { ISerializedSVG } from '../types/typings';
 
 export function parsePathData(d: string): string {
-  return d
-    .replace(/([MLHVCSQTAZmlhvcsqtaz])/g, '\n$1 ')
-    .trim()
-    .split('\n')
-    .map((cmd) => {
-      const [command, ...args] = cmd.trim().split(/[\s,]+/);
-      const floatArgs = args.map((n) => parseFloat(n));
-      switch (command) {
+  const commands = makeAbsolute(parseSVG(d));
+  return commands
+    .map((c: CommandMadeAbsolute) => {
+      switch (c.code) {
       case 'M':
-        return `moveTo(${floatArgs[0]}f, ${floatArgs[1]}f)`;
+        return `moveTo(${c.x}f, ${c.y}f)`;
       case 'L':
-        return `lineTo(${floatArgs[0]}f, ${floatArgs[1]}f)`;
+        return `lineTo(${c.x}f, ${c.y}f)`;
       case 'H':
-        return `horizontalLineTo(${floatArgs[0]}f)`;
+        return `horizontalLineTo(${c.x}f)`;
       case 'V':
-        return `verticalLineTo(${floatArgs[0]}f)`;
+        return `verticalLineTo(${c.y}f)`;
+      case 'C':
+        return `curveTo(${c.x1}f, ${c.y1}f, ${c.x2}f, ${c.y2}f, ${c.x}f, ${c.y}f)`;
+      case 'S':
+        return `reflectiveCurveTo(${c.x2}f, ${c.y2}f, ${c.x}f, ${c.y}f)`;
+      case 'Q':
+        return `quadTo(${c.x1}f, ${c.y1}f, ${c.x}f, ${c.y}f)`;
+      case 'T':
+        return `reflectiveQuadTo(${c.x}f, ${c.y}f)`;
+      case 'A':
+        return `arcTo(${c.rx}f, ${c.ry}f, ${c.xAxisRotation}f, ${c.largeArc}, ${c.sweep}, ${c.x}f, ${c.y}f)`;
       case 'Z':
-      case 'z':
         return 'close()';
       default:
-        return `/* Unsupported command: ${command} */`;
+        return `/* Unsupported command: ${c.code} */`;
       }
     })
     .join('\n            ');
