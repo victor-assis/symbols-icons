@@ -9,6 +9,8 @@ export default function ConfigScreen() {
     setSfVariations,
     filesName,
     setFilesName,
+    kotlinPackage,
+    setKotlinPackage,
   } = useStore();
   const [custom, setCustom] = useState(String(sfSize));
 
@@ -113,6 +115,14 @@ export default function ConfigScreen() {
         </p>
       </section>
       <div className="flex flex-wrap items-end gap-4 px-4 py-3">
+        <label className="flex flex-col min-w-40 flex-1">
+          <input
+            placeholder="Kotlin package"
+            value={kotlinPackage}
+            onChange={(e) => setKotlinPackage(e.target.value)}
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
         <label className="flex flex-col min-w-40 flex-1">
           <input
             placeholder="Files Name"

@@ -11,6 +11,7 @@ export default function GithubScreen() {
     jsonFile,
     exampleFiles,
     filesName,
+    kotlinPackage,
     setAlertMessage,
   } = useStore();
   const { outputs } = githubForm;
@@ -84,6 +85,7 @@ export default function GithubScreen() {
       sfSymbols,
       jsonFile,
       filesName,
+      kotlinPackage,
     };
     setGithubForm(newForm);
     parent.postMessage(
@@ -157,6 +159,7 @@ export default function GithubScreen() {
             pullRequestTitle,
             mainBranch,
             overrides,
+            kotlinPackage,
           },
         },
       },
@@ -173,6 +176,7 @@ export default function GithubScreen() {
     pullRequestTitle,
     mainBranch,
     overrides,
+    kotlinPackage,
   ]);
 
   return (

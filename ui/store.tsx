@@ -39,6 +39,7 @@ export const defaultGithubForm: IFormGithub = {
   sfSymbols: [],
   jsonFile: [],
   filesName: 'icons-symbol',
+  kotlinPackage: 'com.example.icons',
 };
 
 const GlobalContext = createContext<Store | null>(null);
@@ -50,6 +51,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [jsonFile, setJsonFile] = useState<IJsonType[]>([]);
   const [exampleFiles, setExampleFiles] = useState<ExampleFile[]>([]);
   const [filesName, setFilesName] = useState('icons-symbol');
+  const [kotlinPackage, setKotlinPackage] = useState('com.example.icons');
   const [sfSize, setSfSize] = useState<number>(32);
   const [sfVariations, setSfVariations] = useState<Set<string>>(
     new Set(['m-ultralight', 'm-regular', 'm-black']),
@@ -71,6 +73,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
         setJsonFile,
         filesName,
         setFilesName,
+        kotlinPackage,
+        setKotlinPackage,
         sfSize,
         setSfSize,
         sfVariations,

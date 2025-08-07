@@ -37,6 +37,8 @@ export default function IconsScreen() {
     exampleFiles,
     setExampleFiles,
     setFilesName,
+    kotlinPackage,
+    setKotlinPackage,
     useVectorChildren,
     setUseVectorChildren,
     setGithubForm,
@@ -157,7 +159,7 @@ export default function IconsScreen() {
     }
     if (outputs.kt) {
       const ktFolder = zip.folder('kotlin');
-      const kotlinFiles = generateComposeFile(json);
+      const kotlinFiles = generateComposeFile(json, kotlinPackage);
       kotlinFiles.forEach((f) => {
         ktFolder?.file(f.name, f.content);
       });
@@ -225,6 +227,7 @@ export default function IconsScreen() {
           if (data.filesName) setFilesName(data.filesName);
           if (typeof data.useVectorChildren === 'boolean')
             setUseVectorChildren(data.useVectorChildren);
+          if (data.kotlinPackage) setKotlinPackage(data.kotlinPackage);
         },
         githubData: () => {
           if (!data) return;
@@ -245,6 +248,7 @@ export default function IconsScreen() {
             ...data,
             overrides: mergedOverrides,
           });
+          if (data.kotlinPackage) setKotlinPackage(data.kotlinPackage);
         },
         tags: () => {
           const { id, tags } = event.data.pluginMessage;
@@ -283,12 +287,13 @@ export default function IconsScreen() {
             sfVariations: Array.from(sfVariations),
             filesName,
             useVectorChildren,
+            kotlinPackage,
           },
         },
       },
       '*',
     );
-  }, [outputs, sfSize, sfVariations, filesName, useVectorChildren]);
+  }, [outputs, sfSize, sfVariations, filesName, useVectorChildren, kotlinPackage]);
 
   function toggle(name: keyof typeof outputs) {
     setOutputs({ ...outputs, [name]: !outputs[name] });
@@ -313,6 +318,7 @@ export default function IconsScreen() {
             sfVariations: Array.from(sfVariations),
             filesName,
             useVectorChildren,
+            kotlinPackage,
           },
         },
       },

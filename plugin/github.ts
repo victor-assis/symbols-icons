@@ -187,6 +187,7 @@ export const commitToGithub = async (
     sfSymbols,
     jsonFile,
     filesName,
+    kotlinPackage,
     svgs,
     overrides,
   } = githubData;
@@ -246,7 +247,7 @@ export const commitToGithub = async (
     }
 
     if (outputs.kt && svgs) {
-      const kotlinFiles = generateComposeFile(svgs);
+      const kotlinFiles = generateComposeFile(svgs, kotlinPackage);
       addGroup(
         'kt',
         kotlinFiles.map((f) => ({ path: `kotlin/${f.name}`, content: f.content })),

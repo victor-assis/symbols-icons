@@ -14,4 +14,8 @@ describe('generateComposeFile', () => {
     expect(files[0].content).toContain('val IconOne');
     expect(files[0].content).toContain('ImageVector.Builder');
   });
+  it('uses provided kotlin package', () => {
+    const files = generateComposeFile(icons, 'com.test.icons');
+    expect(files[0].content).toContain('package com.test.icons');
+  });
 });

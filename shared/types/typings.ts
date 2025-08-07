@@ -52,6 +52,7 @@ export interface IFormGithub {
   sfSymbols: string[];
   jsonFile: IJsonType[];
   filesName: string;
+  kotlinPackage: string;
   svgs?: ISerializedSVG[];
 }
 
@@ -75,6 +76,8 @@ export interface Store {
   setJsonFile: React.Dispatch<React.SetStateAction<IJsonType[]>>;
   filesName: string;
   setFilesName: React.Dispatch<React.SetStateAction<string>>;
+  kotlinPackage: string;
+  setKotlinPackage: React.Dispatch<React.SetStateAction<string>>;
   sfSize: number;
   setSfSize: React.Dispatch<React.SetStateAction<number>>;
   sfVariations: Set<string>;
