@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../store';
 
 export default function ConfigScreen() {
   const {
+    outputs,
     sfSize,
     setSfSize,
     sfVariations,
@@ -11,6 +12,7 @@ export default function ConfigScreen() {
     setFilesName,
     kotlinPackage,
     setKotlinPackage,
+    useVectorChildren,
   } = useStore();
   const [custom, setCustom] = useState(String(sfSize));
 
@@ -52,6 +54,25 @@ export default function ConfigScreen() {
       setSfSize(v);
     }
   }
+
+  useEffect(() => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'saveSymbolConfig',
+          data: {
+            outputs,
+            sfSize,
+            sfVariations: Array.from(sfVariations),
+            filesName,
+            useVectorChildren,
+            kotlinPackage,
+          },
+        },
+      },
+      '*',
+    );
+  }, [outputs, sfSize, sfVariations, filesName, useVectorChildren, kotlinPackage]);
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-x-hidden">
