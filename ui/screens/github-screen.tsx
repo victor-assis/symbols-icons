@@ -214,55 +214,70 @@ export default function GithubScreen() {
                   </label>
                 </summary>
                 <div className="flex flex-col gap-2 p-4 border-t">
-                  <input
-                    value={overrides[k].path}
-                    onChange={(e) => updateOverride(k, 'path', e.target.value)}
-                    placeholder="Path"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
-                  />
-                  <input
-                    value={overrides[k].owner}
-                    onChange={(e) => updateOverride(k, 'owner', e.target.value)}
-                    placeholder="Owner"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
-                  />
-                  <input
-                    value={overrides[k].repo}
-                    onChange={(e) => updateOverride(k, 'repo', e.target.value)}
-                    placeholder="Repo"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
-                  />
-                  <input
-                    value={overrides[k].mainBranch}
-                    onChange={(e) =>
-                      updateOverride(k, 'mainBranch', e.target.value)
-                    }
-                    placeholder="Main Branch"
-                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
-                  />
+                  <label className="flex flex-col">
+                    <span className="mb-1 text-sm text-gray-700">Path</span>
+                    <input
+                      value={overrides[k].path}
+                      onChange={(e) => updateOverride(k, 'path', e.target.value)}
+                      placeholder="Path"
+                      className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                    />
+                  </label>
+                  <label className="flex flex-col">
+                    <span className="mb-1 text-sm text-gray-700">Owner</span>
+                    <input
+                      value={overrides[k].owner}
+                      onChange={(e) => updateOverride(k, 'owner', e.target.value)}
+                      placeholder="Owner"
+                      className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                    />
+                  </label>
+                  <label className="flex flex-col">
+                    <span className="mb-1 text-sm text-gray-700">Repo</span>
+                    <input
+                      value={overrides[k].repo}
+                      onChange={(e) => updateOverride(k, 'repo', e.target.value)}
+                      placeholder="Repo"
+                      className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                    />
+                  </label>
+                  <label className="flex flex-col">
+                    <span className="mb-1 text-sm text-gray-700">Main Branch</span>
+                    <input
+                      value={overrides[k].mainBranch}
+                      onChange={(e) =>
+                        updateOverride(k, 'mainBranch', e.target.value)
+                      }
+                      placeholder="Main Branch"
+                      className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-10 placeholder:text-[#5c748a] p-[10px] text-base font-normal leading-normal"
+                    />
+                  </label>
                 </div>
               </details>
             );
           })}
         </div>
-        <div className="relative">
-          <input
-            type={showToken ? 'text' : 'password'}
-            value={githubToken}
-            onChange={(e) =>
-              setGithubForm({ ...githubForm, githubToken: e.target.value })
-            }
-            placeholder="Token"
-            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] pr-12 text-base font-normal leading-normal"
-          />
-          <button
-            type="button"
-            onClick={() => setShowToken((prev) => !prev)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#007bff]"
-          >
-            {showToken ? 'Hide' : 'Show'}
-          </button>
-        </div>
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">Token</span>
+          <div className="relative">
+            <input
+              type={showToken ? 'text' : 'password'}
+              value={githubToken}
+              onChange={(e) =>
+                setGithubForm({ ...githubForm, githubToken: e.target.value })
+              }
+              placeholder="Token"
+              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] pr-12 text-base font-normal leading-normal"
+            />
+            <button
+              type="button"
+              onClick={() => setShowToken((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#007bff]"
+            >
+              {showToken ? 'Hide' : 'Show'}
+            </button>
+          </div>
+        </label>
         <p className="text-[#5c748a] text-sm">
           For more information access:{' '}
           <a
@@ -273,62 +288,83 @@ export default function GithubScreen() {
             Github token
           </a>
         </p>
-        <input
-          value={owner}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, owner: e.target.value })
-          }
-          placeholder="Owner"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
-        <input
-          value={repo}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, repo: e.target.value })
-          }
-          placeholder="Repo"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
-        <input
-          value={branch}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, branch: e.target.value })
-          }
-          placeholder="Branch"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
-        <input
-          value={filePath}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, filePath: e.target.value })
-          }
-          placeholder="File Path"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
-        <input
-          value={commitMessage}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, commitMessage: e.target.value })
-          }
-          placeholder="CommitMessage"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
-        <input
-          value={pullRequestTitle}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, pullRequestTitle: e.target.value })
-          }
-          placeholder="Pull Request Title"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
-        <input
-          value={mainBranch}
-          onChange={(e) =>
-            setGithubForm({ ...githubForm, mainBranch: e.target.value })
-          }
-          placeholder="Main Branch"
-          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
-        />
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">Owner</span>
+          <input
+            value={owner}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, owner: e.target.value })
+            }
+            placeholder="Owner"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">Repo</span>
+          <input
+            value={repo}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, repo: e.target.value })
+            }
+            placeholder="Repo"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">Branch</span>
+          <input
+            value={branch}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, branch: e.target.value })
+            }
+            placeholder="Branch"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">File Path</span>
+          <input
+            value={filePath}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, filePath: e.target.value })
+            }
+            placeholder="File Path"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">Commit Message</span>
+          <input
+            value={commitMessage}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, commitMessage: e.target.value })
+            }
+            placeholder="CommitMessage"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">Pull Request Title</span>
+          <input
+            value={pullRequestTitle}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, pullRequestTitle: e.target.value })
+            }
+            placeholder="Pull Request Title"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
+        <label className="flex flex-col">
+          <span className="mb-1 text-sm text-gray-700">Main Branch</span>
+          <input
+            value={mainBranch}
+            onChange={(e) =>
+              setGithubForm({ ...githubForm, mainBranch: e.target.value })
+            }
+            placeholder="Main Branch"
+            className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101518] focus:outline-0 focus:ring-0 border border-[#d4dce2] bg-gray-50 focus:border-[#d4dce2] h-14 placeholder:text-[#5c748a] p-[15px] text-base font-normal leading-normal"
+          />
+        </label>
         <button
           type="submit"
           disabled={loading}

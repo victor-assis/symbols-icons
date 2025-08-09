@@ -137,6 +137,7 @@ export default function ConfigScreen() {
       </section>
       <div className="flex flex-wrap items-end gap-4 px-4 py-3">
         <label className="flex flex-col min-w-40 flex-1">
+          <span className="mb-1 text-sm text-gray-700">Kotlin package</span>
           <input
             placeholder="Kotlin package"
             value={kotlinPackage}
@@ -145,6 +146,7 @@ export default function ConfigScreen() {
           />
         </label>
         <label className="flex flex-col min-w-40 flex-1">
+          <span className="mb-1 text-sm text-gray-700">Files Name</span>
           <input
             placeholder="Files Name"
             value={filesName}
@@ -153,6 +155,7 @@ export default function ConfigScreen() {
           />
         </label>
         <label className="flex flex-col min-w-40 flex-1">
+          <span className="mb-1 text-sm text-gray-700">Custom size</span>
           <input
             placeholder="Custom size"
             value={custom}

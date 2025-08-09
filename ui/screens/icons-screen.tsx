@@ -485,12 +485,15 @@ export default function IconsScreen() {
                     <div>{icon.name}</div>
                   </div>
                 </div>
-                <input
-                  className="form-input w-full rounded border border-gray-300 text-sm p-1"
-                  placeholder="tags (comma separated)"
-                  value={tagInputs[index] ?? icon.tags?.join(', ') ?? ''}
-                  onChange={(e) => handleTagChange(index, e.target.value)}
-                />
+                <label className="flex w-full flex-col">
+                  <span className="mb-1 text-sm text-gray-700">Tags</span>
+                  <input
+                    className="form-input w-full rounded border border-gray-300 text-sm p-1"
+                    placeholder="tags (comma separated)"
+                    value={tagInputs[index] ?? icon.tags?.join(', ') ?? ''}
+                    onChange={(e) => handleTagChange(index, e.target.value)}
+                  />
+                </label>
                 {icon.originalSvg && (
                   <button
                     type="button"
